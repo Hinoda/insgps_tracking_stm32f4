@@ -48,7 +48,7 @@
           <OutputName>testimu</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
-          <CreateHexFile>0</CreateHexFile>
+          <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
           <ListingPath>.\</ListingPath>
@@ -362,7 +362,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER, STM32F40_41xxx, HSE_VALUE=8000000</Define>
               <Undefine></Undefine>
-              <IncludePath>..\Quest16480;.\STM32F4xx_StdPeriph_Driver\inc;.\Matlab;F:\R2016a\extern\include;F:\R2016a\simulink\include;F:\R2016a\rtw\c\src;F:\R2016a\rtw\c\src\ext_mode\common;F:\R2016a\rtw\c\ert;..\Quest16405_GPS_IMU2.2</IncludePath>
+              <IncludePath>..\Quest16480;.\STM32F4xx_StdPeriph_Driver\inc;.\Matlab;F:\R2016a\extern\include;F:\R2016a\simulink\include;F:\R2016a\rtw\c\src;F:\R2016a\rtw\c\src\ext_mode\common;F:\R2016a\rtw\c\ert;..\Quest16405_GPS_IMU2.2;.\result</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -434,6 +434,11 @@
               <FileName>genDataGetProcess.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\genDataGetProcess.c</FilePath>
+            </File>
+            <File>
+              <FileName>initialize.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\initialize.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -514,6 +519,51 @@
               <FileName>rtGetNaN.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\Matlab\rtGetNaN.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>result</GroupName>
+          <Files>
+            <File>
+              <FileName>Cbn_31.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\Cbn_31.c</FilePath>
+            </File>
+            <File>
+              <FileName>Cbn_31_initialize.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\Cbn_31_initialize.c</FilePath>
+            </File>
+            <File>
+              <FileName>Cbn_31_terminate.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\Cbn_31_terminate.c</FilePath>
+            </File>
+            <File>
+              <FileName>insgps_v1_0.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\insgps_v1_0.c</FilePath>
+            </File>
+            <File>
+              <FileName>mrdivide.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\mrdivide.c</FilePath>
+            </File>
+            <File>
+              <FileName>normC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\normC.c</FilePath>
+            </File>
+            <File>
+              <FileName>power.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\power.c</FilePath>
+            </File>
+            <File>
+              <FileName>skew_mat3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\skew_mat3.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -73,7 +73,7 @@ void init_board(void)
   DMA_Init(DMA1_Stream2, &DMA_InitStructure);
   DMA_Cmd(DMA1_Stream2, ENABLE);
 
-  /* DMA1 Stream0 Channel4 for UART5 Tx configuration */			
+  /* DMA1 Stream7 Channel4 for UART5 Tx configuration */			
   DMA_InitStructure.DMA_Channel = DMA_Channel_4;  
   DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&UART5->DR;
   DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)txbuff;
@@ -295,7 +295,6 @@ void receive_data(void){
 			DMA_Cmd(DMA1_Stream5, ENABLE);
 		}
 	}
-	//geniusPVAcal();
 }
 	
 
@@ -307,6 +306,7 @@ void reset_adis(void){
 }
 
 
+/*
 //void read_adis(void){
 //  uint16_t i, j, tbuff;
 //  double temp;
@@ -372,7 +372,7 @@ void reset_adis(void){
 //   marg[9] = marg[9] - 10;
 //	
 //}
-
+*/
 void read_adis(void){
   uint16_t i, j, tbuff;
   double temp;
@@ -528,7 +528,14 @@ void delay_01ms(uint16_t period){
   	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, DISABLE);
 }
 
-
+void ElapseDef_01ms(uint16_t period)
+{
+  	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
+  	TIM7->PSC = 8399;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
+  	TIM7->ARR = period-1;
+  	TIM7->CNT = 0;
+  	TIM7->EGR = 1;		// update registers;
+}
 void IntToStr5(int16_t u, uint8_t *y)
 {
 	int16_t a;
@@ -570,14 +577,40 @@ void IntToStr6(int16_t u, uint8_t *y)
    a = a / 10;
    y[1] = a + 0x30;
 }
+void IntToStr8(int16_t u, uint8_t *y)
+{
+	int16_t a;
+     
+   a = u;
+   if (a<0){ 
+		a = -a; 
+		y[0] = '-';
+	}
+   else y[0] = ' ';
+   
+	 y[7] = a % 10 + 0x30; 
+   a = a / 10;	
+   y[6] = a % 10 + 0x30; 
+   a = a / 10;
+   y[5] = a % 10 + 0x30; 
+   a = a / 10;
+   y[4] = a % 10 + 0x30; 
+   a = a / 10;
+	 y[3] = a % 10 + 0x30; 
+   a = a / 10;
+   y[2] = a % 10 + 0x30; 
+   a = a / 10;
+	 y[1] = a + 0x30;
+	
+}
 
 void send_data(void){
 
 	uint16_t 	i, k;
 	int16_t  	temp;
-	double 		dtemp;
+	double 		dtemp;//hold data
 
-	txbuff[0] = 10;
+	txbuff[0] = 10;//start line with LF
 	k = 1;
 	
 	for (i=0; i<3; i++){
@@ -610,11 +643,11 @@ void send_data(void){
 	k = k + 5;
 	txbuff[k++] = ' ';
 */	
-	txbuff[k++] = 13;
+	txbuff[k++] = 13;//CR 0x0d
 
 	receive_data();//data GPS
 	if(rxflag){
-		txbuff[k++] = 10;
+		txbuff[k++] = 10;//LF 0x0a
 		for (i=0; i<(rxlen-1); i++)
 			txbuff[k++] = xsbuff[i];
 		rxflag = 0;
@@ -624,6 +657,83 @@ void send_data(void){
 	DMA1_Stream7->NDTR = k;
 	DMA_Cmd(DMA1_Stream7, ENABLE);
 }
+/**
+* lan1: 100 100 10 10 10 10 10 10 10 10 10
+* lan2: 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000
+*
+*/
+void send_PVA(void){
+	uint16_t 	i, k;
+	int16_t  	temp;
+	double 		dtemp;//hold data
 
+	txbuff[0] = 10;//start line with LF
+	k=1;
+	/* index */
+	dtemp = PVAout[0]; 
+	temp  = dtemp;
+	IntToStr8(temp, &txbuff[k]);
+	k = k + 8;
+	txbuff[k++] = ' ';
+	//k++;
+	/* lat lon => [rad]*10^6 */
+	for (i=1; i<3; i++){
+		dtemp = PVAout[i]*1000000; 
+		temp  = dtemp;
+		IntToStr8(temp, &txbuff[k]);	
+		k = k + 8;
+		txbuff[k++] = ' ';
+	}
+	/* height VN VE VD => [m m/s]*10^4 */
+	for (i=3; i<7; i++){
+		dtemp = PVAout[i]*10000; 
+		temp  = dtemp;
+		IntToStr6(temp, &txbuff[k]);	
+		k = k + 6;
+		txbuff[k++] = ' ';
+	}
+	/* roll pitch yaw => [rad]*10^6 */
+	for (i=7; i<10; i++){
+		dtemp = PVAout[i]*1000000;
+		temp  = dtemp;
+		IntToStr8(temp, &txbuff[k]);	
+		k = k + 8;
+		txbuff[k++] = ' ';
+	}
+	txbuff[k++] = 13;//CR 0x0d
 
-
+	if(rxflag){
+		txbuff[k++] = 10;//LF 0x0a
+		txbuff[k++] = 61;
+		txbuff[k++] = ' ';
+		/* time => [s]*10 */
+		dtemp = zG[0]; 
+		temp  = dtemp*10;
+		IntToStr8(temp, &txbuff[k]);
+		k = k + 8;
+		txbuff[k++] = ' ';
+		
+		/* lat lon => [rad]*10^6 */
+		for (i=1; i<3; i++){
+			dtemp = zG[i]*1000000; 
+			temp  = dtemp;
+			IntToStr8(temp, &txbuff[k]);	
+			k = k + 8;
+			txbuff[k++] = ' ';
+		}
+		/* height VN VE VD => [m m/s]*10^4 */
+		for (i=3; i<7; i++){
+			dtemp = zG[i]*10000; 
+			temp  = dtemp;
+			IntToStr6(temp, &txbuff[k]);	
+			k = k + 6;
+			txbuff[k++] = ' ';
+		}
+		rxflag = 0;
+	}
+	txbuff[k++] = 13;//CR 0x0d
+	
+	DMA_ClearFlag(DMA1_Stream7, DMA_FLAG_TCIF7);
+	DMA1_Stream7->NDTR = k;
+	DMA_Cmd(DMA1_Stream7, ENABLE);
+}

@@ -16,3 +16,4 @@
 /STM32F4xx_StdPeriph_Driver/*.html
 /*.iex
 /*.lst
+/testimu.hex
