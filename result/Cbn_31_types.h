@@ -2,7 +2,7 @@
  * File: Cbn_31_types.h
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 16-Oct-2017 08:31:21
+ * C/C++ source code generated on  : 07-Nov-2017 15:42:26
  */
 
 #ifndef CBN_31_TYPES_H

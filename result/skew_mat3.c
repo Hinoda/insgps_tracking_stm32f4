@@ -2,13 +2,12 @@
  * File: skew_mat3.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 16-Oct-2017 08:31:21
+ * C/C++ source code generated on  : 07-Nov-2017 15:42:26
  */
 
 /* Include Files */
-#include "rt_nonfinite.h"
 #include "Cbn_31.h"
-#include "insgps_v1_0.h"
+#include "insgps_v4_0.h"
 #include "normC.h"
 #include "skew_mat3.h"
 
@@ -21,7 +20,6 @@
  */
 void skew_mat3(const double A[3], double ret[9])
 {
-  /* row(A)=3 */
   ret[0] = 0.0;
   ret[3] = -A[2];
   ret[6] = A[1];

@@ -1,12 +1,12 @@
 /*
- * File: Cbn_31_initialize.h
+ * File: diag.h
  *
  * MATLAB Coder version            : 3.1
  * C/C++ source code generated on  : 07-Nov-2017 15:42:26
  */
 
-#ifndef CBN_31_INITIALIZE_H
-#define CBN_31_INITIALIZE_H
+#ifndef DIAG_H
+#define DIAG_H
 
 /* Include Files */
 #include <math.h>
@@ -17,12 +17,13 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void Cbn_31_initialize(void);
+void b_diag(const double v[6], double d[36]);
+void diag(const double v[3], double d[9]);
 
 #endif
 
 /*
- * File trailer for Cbn_31_initialize.h
+ * File trailer for diag.h
  *
  * [EOF]
  */

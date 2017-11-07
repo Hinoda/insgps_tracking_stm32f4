@@ -1,6 +1,7 @@
 #include "driver.h"
-#define brPC 460800
-#define brIMU 112500
+#include "genDataGetProcess.h"
+#include "initialize.h"
+
 double  marg[15];
 double  euler[3];
 uint8_t txbuff[TXBUFF_SIZE];
@@ -528,10 +529,10 @@ void delay_01ms(uint16_t period){
   	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, DISABLE);
 }
 
-void ElapseDef_01ms(uint16_t period)
+void ElapseDef_001ms(uint16_t period)
 {
   	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
-  	TIM7->PSC = 8399;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
+  	TIM7->PSC = 839;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
   	TIM7->ARR = period-1;
   	TIM7->CNT = 0;
   	TIM7->EGR = 1;		// update registers;
@@ -670,7 +671,7 @@ void send_PVA(void){
 	txbuff[0] = 10;//start line with LF
 	k=1;
 	/* index */
-	dtemp = PVAout[0]; 
+	dtemp = PVA[0]; 
 	temp  = dtemp;
 	IntToStr8(temp, &txbuff[k]);
 	k = k + 8;
@@ -678,31 +679,31 @@ void send_PVA(void){
 	//k++;
 	/* lat lon => [rad]*10^6 */
 	for (i=1; i<3; i++){
-		dtemp = PVAout[i]*1000000; 
+		dtemp = PVA[i]*1000000;
 		temp  = dtemp;
-		IntToStr8(temp, &txbuff[k]);	
+		IntToStr8(temp, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
 	}
-	/* height VN VE VD => [m m/s]*10^4 */
+	/* height VN VE VD => [m m/s]*10^3 */
 	for (i=3; i<7; i++){
-		dtemp = PVAout[i]*10000; 
+		dtemp = PVA[i]*1000;
 		temp  = dtemp;
-		IntToStr6(temp, &txbuff[k]);	
+		IntToStr6(temp, &txbuff[k]);
 		k = k + 6;
 		txbuff[k++] = ' ';
 	}
 	/* roll pitch yaw => [rad]*10^6 */
 	for (i=7; i<10; i++){
-		dtemp = PVAout[i]*1000000;
+		dtemp = PVA[i]*1000000;
 		temp  = dtemp;
-		IntToStr8(temp, &txbuff[k]);	
+		IntToStr8(temp, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
 	}
 	txbuff[k++] = 13;//CR 0x0d
 
-	if(rxflag){
+	if(gpsflag==YESGPS){
 		txbuff[k++] = 10;//LF 0x0a
 		txbuff[k++] = 61;
 		txbuff[k++] = ' ';
@@ -721,17 +722,15 @@ void send_PVA(void){
 			k = k + 8;
 			txbuff[k++] = ' ';
 		}
-		/* height VN VE VD => [m m/s]*10^4 */
+		/* height VN VE VD => [m m/s]*10^3 */
 		for (i=3; i<7; i++){
-			dtemp = zG[i]*10000; 
+			dtemp = zG[i]*1000; 
 			temp  = dtemp;
 			IntToStr6(temp, &txbuff[k]);	
 			k = k + 6;
 			txbuff[k++] = ' ';
 		}
-		rxflag = 0;
 	}
-	txbuff[k++] = 13;//CR 0x0d
 	
 	DMA_ClearFlag(DMA1_Stream7, DMA_FLAG_TCIF7);
 	DMA1_Stream7->NDTR = k;

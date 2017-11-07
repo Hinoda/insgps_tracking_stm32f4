@@ -3,19 +3,17 @@
 #define XSBUFF_SIZE	RXBUFF_SIZE 
 #define GPS_SENTENCES	2
 #define RTK_SENTENCES	2
-//#include "genDataGetProcess.h"
+#define brPC 460800
+#define brIMU 112500
 #include "stm32f4xx.h"
 #include "misc.h"
 extern double   marg[15];
 extern double   euler[3];
-extern double PVAout[10];
-extern double biasout[6];
-extern double zI[10];
-extern double zG[7];
 extern uint8_t  rxbuff[RXBUFF_SIZE];
 extern uint8_t  txbuff[TXBUFF_SIZE];
 extern uint8_t  xsbuff[XSBUFF_SIZE];
 extern uint16_t rxflag;
+extern uint16_t rxlen;
 /**
 	
   */
@@ -36,7 +34,7 @@ void delay_01ms(uint16_t period);
 /**
 	Define TIM7 for calculating elapsed time
   */
-void ElapseDef_01ms(uint16_t period);
+void ElapseDef_001ms(uint16_t period);
 //-----------------------------------
 /**
 	

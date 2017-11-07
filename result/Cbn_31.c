@@ -2,13 +2,12 @@
  * File: Cbn_31.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 16-Oct-2017 08:31:21
+ * C/C++ source code generated on  : 07-Nov-2017 15:42:26
  */
 
 /* Include Files */
-#include "rt_nonfinite.h"
 #include "Cbn_31.h"
-#include "insgps_v1_0.h"
+#include "insgps_v4_0.h"
 #include "normC.h"
 #include "skew_mat3.h"
 

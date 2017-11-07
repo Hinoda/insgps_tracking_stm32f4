@@ -10,17 +10,20 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
-#include "initialize.h"
 
-extern double xPI_180;
-extern double x180_PI;
+typedef enum 
+{
+	NOGPS,
+	YESGPS
+}gpsflag_t;
+
 extern double zI[10];
 extern double zG[7];
-extern double  marg[15];
-extern double  euler[3];
-extern uint8_t xsbuff[XSBUFF_SIZE];
+extern double gpstime;
+extern gpsflag_t gpsflag;
+
 //extern uint8_t gpsbuff[RXBUFF_SIZE];
-extern void pos2googAddr(double* dest, uint8_t* from, uint8_t length, uint8_t _cPos);
-extern void ToDoubleAddr(double* dest, uint8_t* from, uint8_t length);
-extern void GPSDataProcess(void);
-extern void INSDataProcess(void);
+void pos2googAddr(double* dest, uint8_t* from, uint8_t length, uint8_t _cPos);
+void ToDoubleAddr(double* dest, uint8_t* from, uint8_t length);
+void GPSDataProcess(void);
+void INSDataProcess(void);

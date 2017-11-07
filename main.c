@@ -1,17 +1,20 @@
 #include "stm32f4xx.h"
 #include "misc.h"
 #include "system_timetick.h"
+
 #include "driver.h"
-#include "insgps_v1_0.h"
-#include "IMU_Quest.h"                 /* Model's header file */
-#include "rtwtypes.h"                  /* MathWorks types */
+#include "insgps_v4_0.h"
 #include "initialize.h"
 #include "genDataGetProcess.h"
+#include "IMU_Quest.h"                 /* Model's header file */
+
+//#include "rtwtypes.h"                  /* MathWorks types */
+
 
 static boolean_T OverrunFlag = 0;
 static _Bool started = 0;
-extern double zG[7];
-extern uint8_t comma_counter;
+
+
 void rt_OneStep(void)
 {
   /* Disable interrupts here */
@@ -45,13 +48,13 @@ int main(void)
 {
   //uint16_t i;
   //uint16_t cmdbuff[16];
-  
+  SystemCoreClockUpdate();
   /* Enable SysTick at 5ms interrupt */
-  SysTick_Config(SystemCoreClock/100);//10ms
+  SysTick_Config(SystemCoreClock/20);//10ms
   
   delay_01ms(20000);
   init_board();
-	ElapseDef_01ms(10000);
+	ElapseDef_001ms(10000);
 
   //reset_adis();
 	enable_gps();
@@ -63,30 +66,41 @@ int main(void)
 			tick_flag = 0;
 			/* Reset Elapse Timer*/
 			TIM7->SR  = 0;		// clear overflow flag
-			TIM7->CR1 = 1;		// enable Timer6
+			TIM7->CR1 = 1;		// enable Timer7
 			TIM7->CNT = 0;
 			/* Calcutalte zI+zG data */
-			/* Find Euler angles */
+			
+			/* Get IMU data and Find Euler angles */
 			rt_OneStep();
+			
 			/* Process & Store new INS data */
 			INSDataProcess();
-			/* Request GPS data */
+			
+			/* Get GPS data */
 			receive_data();
+			
 			/* Process & Store new GPS data */
 			GPSDataProcess();
+			
 			/* Check if is started */
-			if (started){
+			if (1){
+			
 				/* Mechanize and EKF */
-				insgps_v1_0();
+				insgps_v4_0(zI, zG, gpsflag, dt, g0, a, e, we, 
+										Q, R, PVA, bias, Pk_1, xk_1);
+
 				/* Transmit PVA to UART5 */
 				send_PVA();
 				//send_data();
 			}
 			else{
+
 				/* Check if GPS has been received */ //xem CRC
 				if (gpsflag == YESGPS){
+
 					/* Init const params (a,e,P0,Q0)*/
 					initialize();
+
 					started = 1;
 				}
 			}
@@ -96,5 +110,3 @@ int main(void)
 		}
   }
 }
-
-

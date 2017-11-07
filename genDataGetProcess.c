@@ -1,5 +1,6 @@
 #include "genDataGetProcess.h"
-
+#include "initialize.h"
+#include "driver.h"
 /**
  * @params   IN: gpsbuff[300]
  *               euler[3]=[roll pitch yaw]
@@ -7,35 +8,31 @@
  *           OUT: PVA[10x1]
  * @brief    collect gpsbuff, euler, marg then calculate kth PVA
  * @format
-	%          [1   2     3      4       5       6       7    8    9    10
-	% zIr  =   [tt  phi   thta   psi   , wx      wy      wz,  ax   ay   az];ADIS!
-	% zGr  =   [tt  time  lat    lon   , latUTM  lonUTM  h,   Ve   Vn   Vd];
-	% ==>
 	% zI   =   [tt  phi   thta   psi   , wx      wy      wz,  ax   ay   az];
 	% zG   =   [tt  lat   lon    h     , Vn      Ve      Vd];
  */
 int ind;
 double zI[10];
 double zG[7]={0,0,0,0,0,0,0};
-enum gpsflag_t{NOGPS,YESGPS}gpsflag=NOGPS;
-uint8_t comma_counter;
+double gpstime;
+gpsflag_t gpsflag = NOGPS;
+
 //uint8_t pxsbuff[XSBUFF_SIZE];
 double height_=0;
 void GPSDataProcess(void)
 {
 	//memcpy(pxsbuff,xsbuff,XSBUFF_SIZE);
+	for (uint8_t i=0;i<7;i++)	zG[i]=0;
 	uint8_t pGPS;
 	double head=0;
-
 	double speed=0;
 	uint8_t comma_idx[23];
-	comma_counter=0;
+	uint8_t comma_counter=0;
 	for(pGPS=0;pGPS<130;pGPS++) if(xsbuff[pGPS]==',') comma_idx[comma_counter++]=pGPS;
 	//gpsflag=NOGPS;//check them CRC
 	//if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)&(comma_counter==23)){//zG
 	//	gpsflag = YESGPS;
 	//}
-	
 	if (comma_counter == 23){//check them CRC
 		/**************************************************************************************/
 		//---------HEAD------------
@@ -57,11 +54,12 @@ void GPSDataProcess(void)
 		zG[2]=zG[2]*xPI_180;
 		/**************************************************************************************/
 		/** TODO (HaiDang1#1#): watch turns of previous fb */
-		zG[6]=(height_-zG[3])/0.1;
+		zG[6]=(height_-zG[3])/(zG[0]-gpstime);
 		height_=zG[3];
-		/** xem height*/
+		gpstime=zG[0];
+		/** xem height -- neu mat 2 lan gps thi sao */
 		//gpsflag=NOGPS;//check them CRC
-		if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)&(comma_counter==23)){//zG
+		if ((head!=0)&(zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)){
 			gpsflag = YESGPS;
 		}
 	}
@@ -70,9 +68,9 @@ void GPSDataProcess(void)
 void INSDataProcess(void)
 {
 	zI[0] = ind++;
-	zI[1] = euler[0]*0.1*PI/180;          // euler (unit rad)
-	zI[2] = euler[1]*0.1*PI/180;
-	zI[3] = euler[2]*0.1*PI/180;
+	zI[1] = euler[0]*0.1*xPI_180;          // euler (unit rad)
+	zI[2] = euler[1]*0.1*xPI_180;
+	zI[3] = euler[2]*0.1*xPI_180;
 	zI[4] = marg[1]*0.001;           // gyro (unit rad/s)
 	zI[5] = marg[2]*0.001;
 	zI[6] = marg[3]*0.001;
