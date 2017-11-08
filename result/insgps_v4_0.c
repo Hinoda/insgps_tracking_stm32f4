@@ -14,129 +14,128 @@
 #include "mrdivide.h"
 #include "diag.h"
 #include "initialize.h"
-#include "genDataGetProcess.h"
 
 /* Function Definitions */
 
 /*
  * mecha
- * Arguments    : const double zI[10]
- *                const double zG[7]
- *                double gpsflag
- *                double dt
- *                double g0
- *                double a
- *                double e
- *                double we
- *                const double Q[144]
- *                const double R[36]
- *                double PVA[10]
- *                double bias[6]
- *                double Pk_1[225]
- *                double xk_1[15]
+ * Arguments    : const float zI[10]
+ *                const float zG[7]
+ *                float gpsflag
+ *                float dt
+ *                float g0
+ *                float a
+ *                float e
+ *                float we
+ *                const float Q[144]
+ *                const float R[36]
+ *                float PVA[10]
+ *                float bias[6]
+ *                float Pk_1[225]
+ *                float xk_1[15]
  * Return Type  : void
  */
-void insgps_v4_0(const double zI[10], const double zG[7], double gpsflag, double
-                 dt, double g0, double a, double e, double we, const double Q
-                 [144], const double R[36], double PVA[10], double bias[6],
-                 double Pk_1[225], double xk_1[15])
+void insgps_v4_0(const float zI[10], const float zG[7], int gpsflag, float
+                 dt, float g0, float a, float e, float we, const float Q
+                 [144], const float R[36], float PVA[10], float bias[6],
+                 float Pk_1[225], float xk_1[15])
 {
-  double vn_[3];
-  double b_PVA[3];
-  double Cbn_[9];
-  double x;
-  double N_;
-  double M_;
-  double RMN;
-  double y;
-  double g;
-  double wen_n[3];
-  double wie_n[3];
-  double b[9];
-  double b_zI[3];
-  double dv4[9];
+  float vn_[3];
+  float b_PVA[3];
+  float Cbn_[9];
+  float x;
+  float N_;
+  float M_;
+  float RMN;
+  float y;
+  float g;
+  float wen_n[3];
+  float wie_n[3];
+  float b[9];
+  float b_zI[3];
+  float dv4[9];
   int i1;
-  double dv5[9];
-  double dv6[9];
+  float dv5[9];
+  float dv6[9];
   int i2;
-  double Cbn[9];
+  float Cbn[9];
   int i3;
-  double c_zI[3];
-  double dv7[3];
-  double fn[3];
-  double h;
-  double lat;
-  double N;
-  double M;
-  double lon;
-  double G[180];
+  float c_zI[3];
+  float dv7[3];
+  float fn[3];
+  float h;
+  float lat;
+  float N;
+  float M;
+  float lon;
+  float G[180];
   static const signed char iv0[36] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-  double b_a;
+  float b_a;
   static const signed char iv1[36] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
-  double b_x;
-  double c_a;
-  double d_a;
-  double c_x;
-  double e_a;
-  double f_a;
-  double g_a;
-  double h_a;
-  double Fvv12;
-  double Fvv13;
-  double Fvv23;
-  double i_a;
-  double j_a;
-  double d_x;
-  double k_a;
-  double Pk[225];
-  double b_we[3];
-  double b_G[225];
-  double PHIk_hat[225];
+  float b_x;
+  float c_a;
+  float d_a;
+  float c_x;
+  float e_a;
+  float f_a;
+  float g_a;
+  float h_a;
+  float Fvv12;
+  float Fvv13;
+  float Fvv23;
+  float i_a;
+  float j_a;
+  float d_x;
+  float k_a;
+  float Pk[225];
+  float b_we[3];
+  float b_G[225];
+  float PHIk_hat[225];
   static const signed char iv2[3] = { 0, 0, -1 };
 
-  static const double dv8[45] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  static const float dv8[45] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, -5.5555555555555558E-5, -0.0, -0.0, -0.0,
     -5.5555555555555558E-5, -0.0, -0.0, -0.0, -5.5555555555555558E-5, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
-  static const double dv9[45] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+  static const float dv9[45] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
     -5.5555555555555558E-5, -0.0, -0.0, -0.0, -5.5555555555555558E-5, -0.0, -0.0,
     -0.0, -5.5555555555555558E-5 };
 
-  double b_M[3];
-  double Hk[90];
-  double l_a[6];
-  double B[36];
-  double b_PHIk_hat[180];
-  double c_PHIk_hat[180];
-  double c_G[180];
-  double d_PHIk_hat[225];
-  double d_G[225];
-  double Qk[225];
+  float b_M[3];
+  float Hk[90];
+  float l_a[6];
+  float B[36];
+  float b_PHIk_hat[180];
+  float c_PHIk_hat[180];
+  float c_G[180];
+  float d_PHIk_hat[225];
+  float d_G[225];
+  float Qk[225];
   static const signed char iv3[45] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1,
     0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0 };
 
-  double b_Hk[90];
-  double c_Hk[36];
-  double b_R[36];
-  double K[90];
-  double e_PHIk_hat[15];
-  double c_M[6];
-  double d_M[6];
-  double xk[15];
-  double b_xk[3];
-  double c_xk[3];
-  double m_a[225];
-  double d_xk[3];
-  double b_Cbn[9];
+  float b_Hk[90];
+  float c_Hk[36];
+  float b_R[36];
+  float K[90];
+  float e_PHIk_hat[15];
+  float c_M[6];
+  float d_M[6];
+  float xk[15];
+  float b_xk[3];
+  float c_xk[3];
+  float m_a[225];
+  float d_xk[3];
+  float b_Cbn[9];
 
   /*  */
   vn_[0] = PVA[4];
@@ -599,7 +598,7 @@ void insgps_v4_0(const double zI[10], const double zG[7], double gpsflag, double
       }
     }
 
-    memcpy(&b_Cbn[0], &Cbn[0], 9U * sizeof(double));
+    memcpy(&b_Cbn[0], &Cbn[0], 9U * sizeof(float));
     normC(b_Cbn, Cbn);
     PVA[0] = zI[0];
     for (i1 = 0; i1 < 3; i1++) {
@@ -620,7 +619,7 @@ void insgps_v4_0(const double zI[10], const double zG[7], double gpsflag, double
     bias[5] = xk[14];
 
     /* reset state d_xk after update xk */
-    memset(&xk[0], 0, 9U * sizeof(double));
+    memset(&xk[0], 0, 9U * sizeof(float));
 
     /* ********************************************************* */
     /* STEP2: time_Prediction */

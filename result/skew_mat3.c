@@ -14,11 +14,11 @@
 /* Function Definitions */
 
 /*
- * Arguments    : const double A[3]
- *                double ret[9]
+ * Arguments    : const float A[3]
+ *                float ret[9]
  * Return Type  : void
  */
-void skew_mat3(const double A[3], double ret[9])
+void skew_mat3(const float A[3], float ret[9])
 {
   ret[0] = 0.0;
   ret[3] = -A[2];

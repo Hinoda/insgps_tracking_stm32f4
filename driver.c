@@ -2,8 +2,8 @@
 #include "genDataGetProcess.h"
 #include "initialize.h"
 
-double  marg[15];
-double  euler[3];
+float  marg[15];
+float  euler[3];
 uint8_t txbuff[TXBUFF_SIZE];
 uint8_t gpsbuff[RXBUFF_SIZE];
 uint8_t rtkbuff[RXBUFF_SIZE];
@@ -310,7 +310,7 @@ void reset_adis(void){
 /*
 //void read_adis(void){
 //  uint16_t i, j, tbuff;
-//  double temp;
+//  float temp;
 
 //  GPIO_ResetBits(GPIOB,GPIO_Pin_12);		// ADIS_STE = 0
 //  for(j=0; j<500; j++);
@@ -324,9 +324,9 @@ void reset_adis(void){
 
 //		tbuff &= 0x3FFF;
 //		if (tbuff >= 0x2000)
-//	  		temp = (double)(tbuff - 0x4000);
+//	  		temp = (float)(tbuff - 0x4000);
 //		else
-//	  		temp = (double)tbuff;
+//	  		temp = (float)tbuff;
 
 //		if (i==1)
 //	  		marg[i-1] = temp * 2.418;				// SUPPLY_OUT (unit mV)
@@ -343,9 +343,9 @@ void reset_adis(void){
 
 //  tbuff &= 0x0FFF;
 //  if (tbuff >= 0x800)
-//	  	temp = (double)(tbuff - 0x1000);
+//	  	temp = (float)(tbuff - 0x1000);
 //  else
-//	  	temp = (double)tbuff;
+//	  	temp = (float)tbuff;
 
 //  marg[i-1] = temp * 13.6 + 2500.0;			// TEM_OUT (don vi 0.01oC)
 
@@ -376,7 +376,7 @@ void reset_adis(void){
 */
 void read_adis(void){
   uint16_t i, j, tbuff;
-  double temp;
+  float temp;
 
   GPIO_ResetBits(GPIOB,GPIO_Pin_12);		// ADIS_STE = 0
   for(j=0; j<1000; j++);
@@ -390,9 +390,9 @@ void read_adis(void){
 
 		tbuff &= 0x3FFF;
 		if (tbuff >= 0x2000)
-	  		temp = (double)(tbuff - 0x4000);
+	  		temp = (float)(tbuff - 0x4000);
 		else
-	  		temp = (double)tbuff;
+	  		temp = (float)tbuff;
 
 		if (i==1)
 	  		marg[i-1] = temp * 2.418;			// SUPPLY_OUT (unit mV)
@@ -409,9 +409,9 @@ void read_adis(void){
 
   tbuff &= 0x0FFF;
   if (tbuff >= 0x800)
-	  	temp = (double)(tbuff - 0x1000);
+	  	temp = (float)(tbuff - 0x1000);
   else
-	  	temp = (double)tbuff;
+	  	temp = (float)tbuff;
 
   marg[i-1] = temp * 14.0 + 2500.0;		// TEM_OUT (don vi 0.01oC)
 
@@ -609,7 +609,7 @@ void send_data(void){
 
 	uint16_t 	i, k;
 	int16_t  	temp;
-	double 		dtemp;//hold data
+	float 		dtemp;//hold data
 
 	txbuff[0] = 10;//start line with LF
 	k = 1;
@@ -666,7 +666,7 @@ void send_data(void){
 void send_PVA(void){
 	uint16_t 	i, k;
 	int16_t  	temp;
-	double 		dtemp;//hold data
+	float 		dtemp;//hold data
 
 	txbuff[0] = 10;//start line with LF
 	k=1;

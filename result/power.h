@@ -17,7 +17,7 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void power(const double a[3], double y[3]);
+void power(const float a[3], float y[3]);
 
 #endif
 

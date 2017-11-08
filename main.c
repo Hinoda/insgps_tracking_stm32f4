@@ -79,7 +79,7 @@ int main(void)
 			GPSDataProcess();
 			
 			/* Check if is started */
-			if (ISstarted){
+			if (1){
 				
 				
 				/* Mechanize and EKF */

@@ -2,16 +2,16 @@
 //params
 #include "initialize.h"
 #include "genDataGetProcess.h"
-double dt, g0;
-double a, e;				//ban kinh TD va tam sai WGS84
-double we;					//toc do quay TD
-double PVA[10];
-double bias[6];
-double Q[144], R[36];
-double Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi 
+float dt, g0;
+float a, e;				//ban kinh TD va tam sai WGS84
+float we;					//toc do quay TD
+float PVA[10];
+float bias[6];
+float Q[144], R[36];
+float Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi 
 														chi muon delay, ko xuat ra*/
-double xPI_180 = 0.017453292519943;
-double x180_PI = 57.295779513082323;
+float xPI_180 = 0.017453292519943;
+float x180_PI = 57.295779513082323;
 
 void initialize(void){
 	/*const*/
@@ -42,7 +42,7 @@ void initialize(void){
 	}
 	/***********************************************************/
 	// P: Pk_1 = diag([sgmPr_; sgmPv_; sgmPe_; sgmPba_; sgmPbg_};
-	double sgmPk_1[15];
+	float sgmPk_1[15];
 	//sgmPr_[3]
 	sgmPk_1[0] = 1e2*xPI_180;
 	sgmPk_1[1] = 1e2*xPI_180;
@@ -78,7 +78,7 @@ void initialize(void){
 	/* Kalman params */
 	/***********************************************************/
 	//Q: do bat dinh cua he thong
-	double sgmQ[12];
+	float sgmQ[12];
 	//sgmQa_[3]
 	sgmQ[0] = 5e0;
 	sgmQ[1] = 5e0;
@@ -103,7 +103,7 @@ void initialize(void){
 	}
 	/***********************************************************/
 	// R: do sai lech cua phep do
-	double sgmR[6];
+	float sgmR[6];
 	//RP
 	sgmR[0] = 1e-6;
 	sgmR[1] = 1e-6;

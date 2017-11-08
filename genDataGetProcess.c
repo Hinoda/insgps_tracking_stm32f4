@@ -12,16 +12,16 @@
 	% zG   =   [tt  lat   lon    h     , Vn      Ve      Vd];
  */
 int ind;
-double zI[10];
-double zG[7]={0,0,0,0,0,0,0};
-double gpstime;
-double head;
-double speed;
+float zI[10];
+float zG[7]={0,0,0,0,0,0,0};
+float gpstime;
+float head;
+float speed;
 gpsflag_t gpsflag = NOGPS;
 static _Bool ISstarted = 0;
 
 //uint8_t pxsbuff[XSBUFF_SIZE];
-double height_=0;
+float height_=0;
 void GPSDataProcess(void)
 {
 	//memcpy(pxsbuff,xsbuff,XSBUFF_SIZE);
@@ -91,7 +91,7 @@ void INSDataProcess(void)
 	zI[8] = -marg[5]*9.80665*0.001;
 	zI[9] = -marg[6]*9.80665*0.001;
 }
-void ToDoubleAddr(double* dest, uint8_t* from, uint8_t length)
+void ToDoubleAddr(float* dest, uint8_t* from, uint8_t length)
 {
   char strdest[length];
 	memcpy(strdest,from,length);
@@ -99,9 +99,9 @@ void ToDoubleAddr(double* dest, uint8_t* from, uint8_t length)
 	*dest = atof(strdest);
 }
 
-void pos2googAddr(double* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
+void pos2googAddr(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
 {
-	double mnt,out;
+	float mnt,out;
 	uint8_t deg;
 	char strMnt[8], strDeg[3], strtemp[length];
 	memcpy(strtemp,from,length);

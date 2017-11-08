@@ -7,8 +7,8 @@
 #define brIMU 112500
 #include "stm32f4xx.h"
 #include "misc.h"
-extern double   marg[15];
-extern double   euler[3];
+extern float   marg[15];
+extern float   euler[3];
 extern uint8_t  rxbuff[RXBUFF_SIZE];
 extern uint8_t  txbuff[TXBUFF_SIZE];
 extern uint8_t  xsbuff[XSBUFF_SIZE];
