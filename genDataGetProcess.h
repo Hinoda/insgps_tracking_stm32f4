@@ -20,8 +20,10 @@ typedef enum
 extern double zI[10];
 extern double zG[7];
 extern double gpstime;
+extern double head;
+extern double speed;
 extern gpsflag_t gpsflag;
-
+static _Bool ISstarted;
 //extern uint8_t gpsbuff[RXBUFF_SIZE];
 void pos2googAddr(double* dest, uint8_t* from, uint8_t length, uint8_t _cPos);
 void ToDoubleAddr(double* dest, uint8_t* from, uint8_t length);

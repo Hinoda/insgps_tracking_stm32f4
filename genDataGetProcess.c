@@ -15,7 +15,10 @@ int ind;
 double zI[10];
 double zG[7]={0,0,0,0,0,0,0};
 double gpstime;
+double head;
+double speed;
 gpsflag_t gpsflag = NOGPS;
+static _Bool ISstarted = 0;
 
 //uint8_t pxsbuff[XSBUFF_SIZE];
 double height_=0;
@@ -23,24 +26,34 @@ void GPSDataProcess(void)
 {
 	//memcpy(pxsbuff,xsbuff,XSBUFF_SIZE);
 	for (uint8_t i=0;i<7;i++)	zG[i]=0;
-	uint8_t pGPS;
-	double head=0;
-	double speed=0;
 	uint8_t comma_idx[23];
 	uint8_t comma_counter=0;
-	for(pGPS=0;pGPS<130;pGPS++) if(xsbuff[pGPS]==',') comma_idx[comma_counter++]=pGPS;
+	
+	for(uint8_t pGPS=0;pGPS<130;pGPS++){
+		if(xsbuff[pGPS]==','){
+			comma_idx[comma_counter++]=pGPS;
+		}
+	}
+	
 	//gpsflag=NOGPS;//check them CRC
 	//if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)&(comma_counter==23)){//zG
 	//	gpsflag = YESGPS;
 	//}
-	if (comma_counter == 23){//check them CRC
+	
+//	if (comma_counter == 23){//check them CRC
 		/**************************************************************************************/
-		//---------HEAD------------
-		ToDoubleAddr(&head,xsbuff+comma_idx[0]+1,comma_idx[1]-comma_idx[0]-1);
-		head=head*xPI_180;
+
 		//---------SPEED------------
 		ToDoubleAddr(&speed,xsbuff+comma_idx[4]+1,comma_idx[5]-comma_idx[4]-1);
 		speed=speed*0.51444444;
+		//---------HEAD------------	
+		if (ISstarted){		
+			ToDoubleAddr(&head,xsbuff+comma_idx[0]+1,comma_idx[1]-comma_idx[0]-1);
+			head=head*xPI_180;
+		}
+		else{
+			head=euler[2]*0.1*xPI_180;
+		}
 		zG[4]=speed*cos(head);
 		zG[5]=speed*sin(head);
 		//---------TIME-------------
@@ -59,10 +72,10 @@ void GPSDataProcess(void)
 		gpstime=zG[0];
 		/** xem height -- neu mat 2 lan gps thi sao */
 		//gpsflag=NOGPS;//check them CRC
-		if ((head!=0)&(zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)){
+		if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)){
 			gpsflag = YESGPS;
 		}
-	}
+//	}
 }
 
 void INSDataProcess(void)

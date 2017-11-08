@@ -12,8 +12,6 @@
 
 
 static boolean_T OverrunFlag = 0;
-static _Bool started = 0;
-
 
 void rt_OneStep(void)
 {
@@ -48,9 +46,9 @@ int main(void)
 {
   //uint16_t i;
   //uint16_t cmdbuff[16];
-  SystemCoreClockUpdate();
+  //SystemCoreClockUpdate();
   /* Enable SysTick at 5ms interrupt */
-  SysTick_Config(SystemCoreClock/20);//10ms
+  SysTick_Config(SystemCoreClock/100);//10ms
   
   delay_01ms(20000);
   init_board();
@@ -58,9 +56,9 @@ int main(void)
 
   //reset_adis();
 	enable_gps();
-  
+	
   IMU_Quest_initialize();
-  
+  delay_01ms(20000);
   while(1){
  		if(tick_flag){
 			tick_flag = 0;
@@ -72,19 +70,18 @@ int main(void)
 			
 			/* Get IMU data and Find Euler angles */
 			rt_OneStep();
-			
-			/* Process & Store new INS data */
-			INSDataProcess();
-			
 			/* Get GPS data */
 			receive_data();
 			
+			/* Process & Store new INS data */
+			INSDataProcess();
 			/* Process & Store new GPS data */
 			GPSDataProcess();
 			
 			/* Check if is started */
-			if (1){
-			
+			if (ISstarted){
+				
+				
 				/* Mechanize and EKF */
 				insgps_v4_0(zI, zG, gpsflag, dt, g0, a, e, we, 
 										Q, R, PVA, bias, Pk_1, xk_1);
@@ -94,14 +91,13 @@ int main(void)
 				//send_data();
 			}
 			else{
-
 				/* Check if GPS has been received */ //xem CRC
 				if (gpsflag == YESGPS){
-
+					
 					/* Init const params (a,e,P0,Q0)*/
 					initialize();
 
-					started = 1;
+					ISstarted = 1;
 				}
 			}
 			gpsflag = NOGPS;
