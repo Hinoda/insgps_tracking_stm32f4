@@ -2,7 +2,7 @@
  * File: Cbn_31.h
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 07-Nov-2017 15:42:26
+ * C/C++ source code generated on  : 09-Nov-2017 10:12:01
  */
 
 #ifndef CBN_31_H

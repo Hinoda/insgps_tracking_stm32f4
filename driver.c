@@ -1,7 +1,5 @@
 #include "driver.h"
 #include "genDataGetProcess.h"
-#include "initialize.h"
-
 double  marg[15];
 double  euler[3];
 uint8_t txbuff[TXBUFF_SIZE];
@@ -663,7 +661,7 @@ void send_data(void){
 * lan2: 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000
 *
 */
-void send_PVA(void){
+void send_PVA(double PVA[10],double zG[7]){
 	uint16_t 	i, k;
 	int16_t  	temp;
 	double 		dtemp;//hold data
@@ -703,7 +701,7 @@ void send_PVA(void){
 	}
 	txbuff[k++] = 13;//CR 0x0d
 
-	if(gpsflag==YESGPS){
+	if(gpsflag == 1){
 		txbuff[k++] = 10;//LF 0x0a
 		txbuff[k++] = 61;
 		txbuff[k++] = ' ';

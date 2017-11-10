@@ -17,8 +17,8 @@ double zG[7]={0,0,0,0,0,0,0};
 double gpstime;
 double head;
 double speed;
-gpsflag_t gpsflag = NOGPS;
-static _Bool ISstarted = 0;
+int gpsflag = 0;
+_Bool started = 0;
 
 //uint8_t pxsbuff[XSBUFF_SIZE];
 double height_=0;
@@ -35,19 +35,13 @@ void GPSDataProcess(void)
 		}
 	}
 	
-	//gpsflag=NOGPS;//check them CRC
-	//if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)&(comma_counter==23)){//zG
-	//	gpsflag = YESGPS;
-	//}
 	
-//	if (comma_counter == 23){//check them CRC
-		/**************************************************************************************/
-
+	if (comma_counter == 23){//check them CRC
 		//---------SPEED------------
 		ToDoubleAddr(&speed,xsbuff+comma_idx[4]+1,comma_idx[5]-comma_idx[4]-1);
 		speed=speed*0.51444444;
 		//---------HEAD------------	
-		if (ISstarted){		
+		if (started){		
 			ToDoubleAddr(&head,xsbuff+comma_idx[0]+1,comma_idx[1]-comma_idx[0]-1);
 			head=head*xPI_180;
 		}
@@ -73,9 +67,9 @@ void GPSDataProcess(void)
 		/** xem height -- neu mat 2 lan gps thi sao */
 		//gpsflag=NOGPS;//check them CRC
 		if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)){
-			gpsflag = YESGPS;
+			gpsflag = 1;
 		}
-//	}
+	}
 }
 
 void INSDataProcess(void)

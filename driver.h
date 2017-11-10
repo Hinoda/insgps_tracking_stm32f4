@@ -62,7 +62,7 @@ void cmdw_adis(uint16_t data);
 	using UART5 transmit PVA results to laptop
 	transmit buffer is
   */
-void send_PVA(void);
+void send_PVA(double PVA[10],double zG[7]);
 
 
 /**
