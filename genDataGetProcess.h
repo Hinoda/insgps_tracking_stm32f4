@@ -3,7 +3,6 @@
 #define XSBUFF_SIZE	RXBUFF_SIZE 
 #define GPS_SENTENCES	2
 #define RTK_SENTENCES	2
-#define PI 3.14159265
 
 #include <stdio.h>
 #include <stdint.h>

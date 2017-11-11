@@ -9,6 +9,7 @@ uint8_t xsbuff[XSBUFF_SIZE];
 uint16_t rxlen  = 0;
 uint16_t rxflag = 0;
 uint16_t rxfull = 0;
+uint32_t elapsedTime1;
 
 void init_board(void)
 {
@@ -529,11 +530,24 @@ void delay_01ms(uint16_t period){
 
 void ElapseDef_001ms(uint16_t period)
 {
-  	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
-  	TIM7->PSC = 839;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
-  	TIM7->ARR = period-1;
-  	TIM7->CNT = 0;
-  	TIM7->EGR = 1;		// update registers;
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
+	TIM7->PSC = 839;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
+	TIM7->ARR = period-1;
+	TIM7->CNT = 0;
+	TIM7->EGR = 1;		/* Generate an update event to reload the Prescaler value immediately */
+}
+
+void ElapseGet(uint32_t* elapsedTime)
+{
+	*elapsedTime=TIM7->CNT;
+	TIM7->CR1 = 0;		// stop Timer7
+}
+
+void ElapseRestart(void)
+{
+	TIM7->SR  = 0;		// clear overflow flag
+	TIM7->CNT = 0;
+	TIM7->CR1 = 1;		// enable Timer7
 }
 void IntToStr5(int16_t u, uint8_t *y)
 {

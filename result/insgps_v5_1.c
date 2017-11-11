@@ -6,16 +6,18 @@
  */
 
 /* Include Files */
-#include "initialize.h"
-#include "genDataGetProcess.h"
-#include "Cbn_31.h"
 #include "insgps_v5_1.h"
+#include "Cbn_31.h"
 #include "normC.h"
 #include "skew_mat3.h"
 #include "eye.h"
 #include "mrdivide.h"
 #include "diag.h"
-
+#include "initialize.h"
+#include "genDataGetProcess.h"
+#include "stm32f4xx.h"
+#include <math.h>
+#include "arm_math.h"
 
 /* Function Definitions */
 
@@ -135,7 +137,6 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
   double c_xk_1[3];
   double d_xk_1[3];
   double b_Cbn[9];
-
   /* { */
   /* lat_ = PVA(2); */
   /* lon_ = PVA(3); */
@@ -158,21 +159,20 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
 
   /*  Cbn_=normC(Cbn_); */
   /* params */
-  x = sin(PVA[1]);
-  N_ = a / sqrt(1.0 - e * e * (x * x));
-  x = sin(PVA[1]);
-  M_ = a * (1.0 - e * e) / pow(1.0 - e * e * (x * x), 1.5);
-  RMN = sqrt(N_ * M_);
-  y = RMN / (RMN + PVA[3]);
-  g = g0 * (y * y);
+	x = arm_add(1,arm_negate(arm_mult(arm_power(e),arm_power(arm_sin_f32(PVA[1])))));
+	N_ = a / arm_sqrt(x);
+	M_ = arm_mult(a,arm_add(1,arm_negate(arm_power(e)))) / arm_mult(x,arm_sqrt(x));
+	RMN = arm_sqrt(arm_mult(N_,M_));
+	y = RMN / arm_add(RMN,PVA[3]);
+	g = arm_mult(g0,arm_power(y));
 
   /* gn */
   wen_n[0] = PVA[5] / (N_ + PVA[3]);
   wen_n[1] = -PVA[4] / (M_ + PVA[3]);
   wen_n[2] = -PVA[5] * tan(PVA[1]) / (N_ + PVA[3]);
-  wie_n[0] = we * cos(PVA[1]);
+  wie_n[0] = we * arm_cos_f32(PVA[1]);
   wie_n[1] = 0.0;
-  wie_n[2] = -we * sin(PVA[1]);
+  wie_n[2] = -we * arm_sin_f32(PVA[1]);
   eye(b);
   b_zI[0] = zI[4] - bias[3];
   b_zI[1] = zI[5] - bias[4];
@@ -242,37 +242,37 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
   /* % Position */
   h = PVA[3] - dt / 2.0 * (PVA[6] + vn[2]);
   lat = PVA[1] + dt / 2.0 * (PVA[4] / (M_ + PVA[3]) + vn[0] / (M_ + h));
-  x = sin(lat);
+	x = arm_sin_f32(lat);
   N = a / sqrt(1.0 - e * e * (x * x));
-  x = sin(lat);
   M = a * (1.0 - e * e) / pow(1.0 - e * e * (x * x), 1.5);
-  lon = PVA[2] + dt / 2.0 * (PVA[5] / ((N_ + PVA[3]) * cos(PVA[1])) + vn[1] /
-    ((N + h) * cos(lat)));
+  lon = PVA[2] + dt / 2.0 * (PVA[5] / ((N_ + PVA[3]) * arm_cos_f32(PVA[1])) + vn[1] /
+    ((N + h) * arm_cos_f32(lat)));
 
   /* ** rn */
   wen_n[0] = lat;
   wen_n[1] = lon;
   wen_n[2] = h;
+	
 
   /* ****************************************************************** */
   /* 	Extended Kalman */
   /* ------------------------------------------------ */
-  wie_n[0] = we * cos(lat) + vn[1] / (N + h);
+  wie_n[0] = we * arm_cos_f32(lat) + vn[1] / (N + h);
   wie_n[1] = -vn[0] / (M + h);
-  wie_n[2] = -we * sin(lat) - vn[1] * tan(lat) / (N + h);
+  wie_n[2] = -we * arm_sin_f32(lat) - vn[1] * arm_sin_f32(lat)/arm_cos_f32(lat) / (N + h);
 
   /*  linearize */
   /* --------- */
   y = M + h;
-  x = cos(lat);
+  x = arm_cos_f32(lat);
   b_a = N + h;
 
   /* --------- */
   /* --------- */
-  b_x = cos(lat);
+  b_x = arm_cos_f32(lat);
   c_a = M + h;
   d_a = N + h;
-  c_x = cos(lat);
+  c_x = arm_cos_f32(lat);
   e_a = N + h;
   f_a = N + h;
   g_a = N + h;
@@ -282,7 +282,7 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
   /* --------- */
   i_a = N + h;
   j_a = M + h;
-  d_x = cos(lat);
+  d_x = arm_cos_f32(lat);
   k_a = N + h;
 
   /* --------- */
@@ -312,11 +312,11 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
   dv8[90] = 0.0;
   dv8[105] = 0.0;
   dv8[120] = 0.0;
-  dv8[1] = vn[1] * sin(lat) / ((N + h) * (x * x));
+  dv8[1] = vn[1] * arm_sin_f32(lat) / ((N + h) * (x * x));
   dv8[16] = 0.0;
-  dv8[31] = -vn[1] / (b_a * b_a * cos(lat));
+  dv8[31] = -vn[1] / (b_a * b_a * arm_cos_f32(lat));
   dv8[46] = 0.0;
-  dv8[61] = 1.0 / ((N + h) * cos(lat));
+  dv8[61] = 1.0 / ((N + h) * arm_cos_f32(lat));
   dv8[76] = 0.0;
   dv8[91] = 0.0;
   dv8[106] = 0.0;
@@ -325,36 +325,36 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
     dv8[2 + 15 * i1] = iv0[i1];
   }
 
-  dv8[3] = -2.0 * vn[1] * we * cos(lat) - vn[1] * vn[1] / ((N + h) * (b_x * b_x));
+  dv8[3] = -2.0 * vn[1] * we * arm_cos_f32(lat) - vn[1] * vn[1] / ((N + h) * (b_x * b_x));
   dv8[18] = 0.0;
-  dv8[33] = -vn[0] * vn[2] / (c_a * c_a) + vn[1] * vn[1] * tan(lat) / (d_a * d_a);
+  dv8[33] = -vn[0] * vn[2] / (c_a * c_a) + vn[1] * vn[1] * arm_sin_f32(lat)/arm_cos_f32(lat) / (d_a * d_a);
   dv8[48] = vn[2] / (M + h);
-  dv8[63] = -2.0 * we * sin(lat) - 2.0 * vn[1] * tan(lat) / (N + h);
+  dv8[63] = -2.0 * we * arm_sin_f32(lat) - 2.0 * vn[1] * arm_sin_f32(lat)/arm_cos_f32(lat) / (N + h);
   dv8[78] = vn[0] / (M + h);
   dv8[93] = 0.0;
   dv8[108] = -fn[2];
   dv8[123] = fn[1];
-  dv8[4] = 2.0 * we * (vn[0] * cos(lat) - vn[2] * sin(lat)) + vn[1] * vn[0] /
+  dv8[4] = 2.0 * we * (vn[0] * arm_cos_f32(lat) - vn[2] * arm_sin_f32(lat)) + vn[1] * vn[0] /
     ((N + h) * (c_x * c_x));
   dv8[19] = 0.0;
-  dv8[34] = -vn[1] * vn[2] / (e_a * e_a) - vn[0] * vn[1] * tan(lat) / (f_a * f_a);
-  dv8[49] = 2.0 * we * sin(lat) + vn[1] * tan(lat) / (N + h);
-  dv8[64] = (vn[2] + vn[0] * tan(lat)) / (N + h);
-  dv8[79] = 2.0 * we * cos(lat) + vn[1] / (N + h);
+  dv8[34] = -vn[1] * vn[2] / (e_a * e_a) - vn[0] * vn[1] * arm_sin_f32(lat)/arm_cos_f32(lat) / (f_a * f_a);
+  dv8[49] = 2.0 * we * arm_sin_f32(lat) + vn[1] * arm_sin_f32(lat)/arm_cos_f32(lat) / (N + h);
+  dv8[64] = (vn[2] + vn[0] * arm_sin_f32(lat)/arm_cos_f32(lat)) / (N + h);
+  dv8[79] = 2.0 * we * arm_cos_f32(lat) + vn[1] / (N + h);
   dv8[94] = fn[2];
   dv8[109] = 0.0;
   dv8[124] = -fn[0];
-  dv8[5] = 2.0 * vn[1] * we * sin(lat);
+  dv8[5] = 2.0 * vn[1] * we * arm_sin_f32(lat);
   dv8[20] = 0.0;
   dv8[35] = (vn[1] * vn[1] / (g_a * g_a) + vn[0] * vn[0] / (h_a * h_a)) - 2.0 *
     g / (sqrt(M * N) + h);
   dv8[50] = -2.0 * vn[0] / (M + h);
-  dv8[65] = -2.0 * we * cos(lat) - 2.0 * vn[1] / (N + h);
+  dv8[65] = -2.0 * we * arm_cos_f32(lat) - 2.0 * vn[1] / (N + h);
   dv8[80] = 0.0;
   dv8[95] = -fn[1];
   dv8[110] = fn[0];
   dv8[125] = 0.0;
-  dv8[6] = -we * sin(lat);
+  dv8[6] = -we * arm_sin_f32(lat);
   dv8[21] = 0.0;
   dv8[36] = -vn[1] / (i_a * i_a);
   dv8[51] = 0.0;
@@ -372,11 +372,11 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
   dv8[97] = -wie_n[2];
   dv8[112] = 0.0;
   dv8[127] = wie_n[0];
-  dv8[8] = -we * cos(lat) - vn[1] / ((N + h) * (d_x * d_x));
+  dv8[8] = -we * arm_cos_f32(lat) - vn[1] / ((N + h) * (d_x * d_x));
   dv8[23] = 0.0;
-  dv8[38] = vn[1] * tan(lat) / (k_a * k_a);
+  dv8[38] = vn[1] * arm_sin_f32(lat)/arm_cos_f32(lat) / (k_a * k_a);
   dv8[53] = 0.0;
-  dv8[68] = -tan(lat) / (N + h);
+  dv8[68] = -arm_sin_f32(lat)/arm_cos_f32(lat) / (N + h);
   dv8[83] = 0.0;
   dv8[98] = wie_n[1];
   dv8[113] = -wie_n[0];
@@ -417,7 +417,7 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
   /* dVE */
   /* dVD */
   b_M[0] = M + h;
-  b_M[1] = (N + h) * cos(lat);
+  b_M[1] = (N + h) * arm_cos_f32(lat);
   b_M[2] = 1.0;
   b_diag(b_M, Cbn_);
   for (i1 = 0; i1 < 3; i1++) {
@@ -439,7 +439,7 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
   /*  R~z  R~6 */
   y = M + h;
   b_a = N + h;
-  x = cos(lat);
+  x = arm_cos_f32(lat);
   l_a[0] = y * y;
   l_a[1] = b_a * b_a * (x * x);
   l_a[2] = 1.0;
@@ -539,7 +539,7 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
 
     /* 15x15*15x6*(6x15*15x15*15x6+6*6)^-1 */
     c_M[0] = (M + h) * (lat - zG[1]);
-    c_M[1] = (N + h) * cos(lat) * (lon - zG[2]);
+    c_M[1] = (N + h) * arm_cos_f32(lat) * (lon - zG[2]);
     c_M[2] = h - zG[3];
     c_M[3] = vn[0] - zG[4];
     c_M[4] = vn[1] - zG[5];
@@ -641,8 +641,8 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
       PVA[i1 + 4] = vn[i1];
     }
 
-    PVA[7] = atan2(Cbn[5], Cbn[8]);
-    PVA[8] = -atan(Cbn[2] / sqrt(1.0 - Cbn[2] * Cbn[2]));
+		PVA[7] = atan2(Cbn[5], Cbn[8]);
+    PVA[8] = -atan(Cbn[2] / arm_sqrt(arm_add(1,-arm_power(Cbn[2]))));
     PVA[9] = atan2(Cbn[1], Cbn[0]);
 
     /* 10x1 */
@@ -722,9 +722,13 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
       PVA[i1 + 4] = vn[i1];
     }
 
-    PVA[7] = atan2(Cbn[5], Cbn[8]);
-    PVA[8] = -atan(Cbn[2] / sqrt(1.0 - Cbn[2] * Cbn[2]));
+		PVA[7] = atan2(Cbn[5], Cbn[8]);
+    PVA[8] = -atan(Cbn[2] / arm_sqrt(arm_add(1,-arm_power(Cbn[2]))));
     PVA[9] = atan2(Cbn[1], Cbn[0]);
+		
+//    PVA[7] = atan2(Cbn[5], Cbn[8]);
+//    PVA[8] = -atan(Cbn[2] / sqrt(1.0 - Cbn[2] * Cbn[2]));
+//    PVA[9] = atan2(Cbn[1], Cbn[0]);
 
     /* 10x1 */
     bias[0] = xk_1[9];
@@ -736,6 +740,51 @@ void insgps_v5_1(const double zI[10], const double zG[7], int gpsflag, double
   }
 }
 
+
+
+
+float32_t arm_mult(float32_t a, float32_t b){
+	float32_t ans;
+	arm_mult_f32(&a,&b,&ans,1);
+	return ans;
+}
+
+float32_t arm_power(float32_t a){
+	float32_t ans;
+	arm_power_f32(&a,1,&ans);
+	return ans;
+}
+
+//float32_t asub(float32_t a, float32_t b){
+//	float32_t ans;
+//	arm_mat_sub_f32(&a,&b,&ans);
+//	return ans;
+//}
+
+float32_t arm_sqrt(float32_t a){
+	float32_t ans;
+	arm_sqrt_f32(a,&ans);
+	return ans;
+}
+
+float32_t arm_add(float32_t a, float32_t b){
+	float32_t ans;
+	arm_add_f32(&a,&b,&ans,1);
+	return ans;
+}
+
+float32_t arm_negate(float32_t a){
+	float32_t ans;
+	arm_negate_f32(&a,&ans,1);
+	return ans;
+}
+
+float32_t arm_sin(float32_t a){
+	float32_t ans;
+	float32_t ans1;
+	arm_sin_cos_f32(a,&ans,&ans1);
+	return ans;
+}
 /*
  * File trailer for insgps_v5_1.c
  *

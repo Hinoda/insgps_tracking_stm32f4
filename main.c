@@ -15,7 +15,8 @@
 #include "skew_mat3.h"
 #include "Cbn_31_terminate.h"
 #include "Cbn_31_initialize.h"
-
+#include "arm_math.h"
+#include "math.h"
 
 static boolean_T OverrunFlag = 0;
 
@@ -47,7 +48,6 @@ void rt_OneStep(void)
 }
 
 uint16_t ID[3];
-uint16_t elapsedTime;
 int main(void)
 {
   //uint16_t i;
@@ -67,12 +67,9 @@ int main(void)
   while(1){
  		if(tick_flag){
 			tick_flag = 0;
-			/* Reset Elapse Timer*/
-			TIM7->SR  = 0;		// clear overflow flag
-			TIM7->CNT = 0;
-			TIM7->CR1 = 1;		// enable Timer7
+			ElapseRestart();
+			
 			/* Calcutalte zI+zG data */
-
 			rt_OneStep();							/* IMU_Quest: Get IMU data. Find Euler angles */
 			INSDataProcess();					/* Process & Store new INS data */
 			
@@ -95,8 +92,7 @@ int main(void)
 				}
 			}
 			gpsflag = 0;
-			elapsedTime=TIM7->CNT;
-			TIM7->CR1 = 0;		// stop Timer7
+			ElapseGet(&elapsedTime1);
 		}
   }
 }
