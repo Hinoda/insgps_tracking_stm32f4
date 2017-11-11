@@ -15,11 +15,11 @@
 /* Function Definitions */
 
 /*
- * Arguments    : const double a[3]
- *                double y[3]
+ * Arguments    : const float a[3]
+ *                float y[3]
  * Return Type  : void
  */
-void power(const double a[3], double y[3])
+void power(const float a[3], float y[3])
 {
   int k;
   for (k = 0; k < 3; k++) {

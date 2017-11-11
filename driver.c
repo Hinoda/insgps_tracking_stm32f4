@@ -2,6 +2,7 @@
 #include "genDataGetProcess.h"
 double  marg[15];
 double  euler[3];
+uint32_t elapsedTime1;
 uint8_t txbuff[TXBUFF_SIZE];
 uint8_t gpsbuff[RXBUFF_SIZE];
 uint8_t rtkbuff[RXBUFF_SIZE];
@@ -529,11 +530,24 @@ void delay_01ms(uint16_t period){
 
 void ElapseDef_001ms(uint16_t period)
 {
-  	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
-  	TIM7->PSC = 839;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
-  	TIM7->ARR = period-1;
-  	TIM7->CNT = 0;
-  	TIM7->EGR = 1;		// update registers;
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
+	TIM7->PSC = 839;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
+	TIM7->ARR = period-1;
+	TIM7->CNT = 0;
+	TIM7->EGR = 1;		/* Generate an update event to reload the Prescaler value immediately */
+}
+
+void ElapseGet(uint32_t* elapsedTime)
+{
+	*elapsedTime=TIM7->CNT;
+	TIM7->CR1 = 0;		// stop Timer7
+}
+
+void ElapseRestart(void)
+{
+	TIM7->SR  = 0;		// clear overflow flag
+	TIM7->CNT = 0;
+	TIM7->CR1 = 1;		// enable Timer7
 }
 void IntToStr5(int16_t u, uint8_t *y)
 {
@@ -661,16 +675,16 @@ void send_data(void){
 * lan2: 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000
 *
 */
-void send_PVA(double PVA[10],double zG[7]){
+void send_PVA(float PVA[10],float zG[7]){
 	uint16_t 	i, k;
 	int16_t  	temp;
-	double 		dtemp;//hold data
+	float 		dtemp;//hold data
 
 	txbuff[0] = 10;//start line with LF
 	k=1;
 	/* index */
 	dtemp = PVA[0]; 
-	temp  = dtemp;
+	temp  = (int16_t)dtemp;
 	IntToStr8(temp, &txbuff[k]);
 	k = k + 8;
 	txbuff[k++] = ' ';
@@ -678,7 +692,7 @@ void send_PVA(double PVA[10],double zG[7]){
 	/* lat lon => [rad]*10^6 */
 	for (i=1; i<3; i++){
 		dtemp = PVA[i]*1000000;
-		temp  = dtemp;
+		temp  = (int16_t)dtemp;
 		IntToStr8(temp, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
@@ -686,7 +700,7 @@ void send_PVA(double PVA[10],double zG[7]){
 	/* height VN VE VD => [m m/s]*10^3 */
 	for (i=3; i<7; i++){
 		dtemp = PVA[i]*1000;
-		temp  = dtemp;
+		temp  = (int16_t)dtemp;
 		IntToStr6(temp, &txbuff[k]);
 		k = k + 6;
 		txbuff[k++] = ' ';
@@ -694,7 +708,7 @@ void send_PVA(double PVA[10],double zG[7]){
 	/* roll pitch yaw => [rad]*10^6 */
 	for (i=7; i<10; i++){
 		dtemp = PVA[i]*1000000;
-		temp  = dtemp;
+		temp  = (int16_t)dtemp;
 		IntToStr8(temp, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
@@ -706,8 +720,8 @@ void send_PVA(double PVA[10],double zG[7]){
 		txbuff[k++] = 61;
 		txbuff[k++] = ' ';
 		/* time => [s]*10 */
-		dtemp = zG[0]; 
-		temp  = dtemp*10;
+		dtemp = zG[0]*10; 
+		temp  = (int16_t)dtemp;
 		IntToStr8(temp, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
@@ -715,7 +729,7 @@ void send_PVA(double PVA[10],double zG[7]){
 		/* lat lon => [rad]*10^6 */
 		for (i=1; i<3; i++){
 			dtemp = zG[i]*1000000; 
-			temp  = dtemp;
+			temp  = (int16_t)dtemp;
 			IntToStr8(temp, &txbuff[k]);	
 			k = k + 8;
 			txbuff[k++] = ' ';
@@ -723,8 +737,8 @@ void send_PVA(double PVA[10],double zG[7]){
 		/* height VN VE VD => [m m/s]*10^3 */
 		for (i=3; i<7; i++){
 			dtemp = zG[i]*1000; 
-			temp  = dtemp;
-			IntToStr6(temp, &txbuff[k]);	
+			temp  = (int16_t)dtemp;
+			IntToStr6(temp, &txbuff[k]);
 			k = k + 6;
 			txbuff[k++] = ' ';
 		}

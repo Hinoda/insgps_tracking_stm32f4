@@ -17,7 +17,7 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void mrdivide(double A[90], const double B[36]);
+void mrdivide(float A[90], const float B[36]);
 
 #endif
 

@@ -12,16 +12,16 @@
 	% zG   =   [tt  lat   lon    h     , Vn      Ve      Vd];
  */
 int ind;
-double zI[10];
-double zG[7]={0,0,0,0,0,0,0};
-double gpstime;
-double head;
-double speed;
-int gpsflag = 0;
+float zI[10];
+float zG[7]={0,0,0,0,0,0,0};
+float gpstime;
+float head;
+float speed;
+_Bool gpsflag = 0;
 _Bool started = 0;
 
 //uint8_t pxsbuff[XSBUFF_SIZE];
-double height_=0;
+float height_=0;
 void GPSDataProcess(void)
 {
 	//memcpy(pxsbuff,xsbuff,XSBUFF_SIZE);
@@ -35,14 +35,13 @@ void GPSDataProcess(void)
 		}
 	}
 	
-	
 	if (comma_counter == 23){//check them CRC
 		//---------SPEED------------
-		ToDoubleAddr(&speed,xsbuff+comma_idx[4]+1,comma_idx[5]-comma_idx[4]-1);
+		TofloatAddr(&speed,xsbuff+comma_idx[4]+1,comma_idx[5]-comma_idx[4]-1);
 		speed=speed*0.51444444;
 		//---------HEAD------------	
 		if (started){		
-			ToDoubleAddr(&head,xsbuff+comma_idx[0]+1,comma_idx[1]-comma_idx[0]-1);
+			TofloatAddr(&head,xsbuff+comma_idx[0]+1,comma_idx[1]-comma_idx[0]-1);
 			head=head*xPI_180;
 		}
 		else{
@@ -51,9 +50,9 @@ void GPSDataProcess(void)
 		zG[4]=speed*cos(head);
 		zG[5]=speed*sin(head);
 		//---------TIME-------------
-		ToDoubleAddr(&zG[0],xsbuff+comma_idx[9]+1,comma_idx[10]-comma_idx[9]-1);
+		TofloatAddr(&zG[0],xsbuff+comma_idx[9]+1,comma_idx[10]-comma_idx[9]-1);
 		//---------HEIGHT-----------
-		ToDoubleAddr(&zG[3],xsbuff+comma_idx[17]+1,comma_idx[18]-comma_idx[17]-1);
+		TofloatAddr(&zG[3],xsbuff+comma_idx[17]+1,comma_idx[18]-comma_idx[17]-1);
 		//---------LATLON-----------
 		pos2googAddr(&zG[1],xsbuff+comma_idx[10]+1,comma_idx[11]-comma_idx[10]-1,xsbuff[comma_idx[11]+1]);
 		pos2googAddr(&zG[2],xsbuff+comma_idx[12]+1,comma_idx[13]-comma_idx[12]-1,xsbuff[comma_idx[13]+1]);
@@ -66,10 +65,9 @@ void GPSDataProcess(void)
 		gpstime=zG[0];
 		/** xem height -- neu mat 2 lan gps thi sao */
 		//gpsflag=NOGPS;//check them CRC
-		if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0)){
-			gpsflag = 1;
-		}
 	}
+	if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0))
+		gpsflag = 1;
 }
 
 void INSDataProcess(void)
@@ -85,7 +83,7 @@ void INSDataProcess(void)
 	zI[8] = -marg[5]*9.80665*0.001;
 	zI[9] = -marg[6]*9.80665*0.001;
 }
-void ToDoubleAddr(double* dest, uint8_t* from, uint8_t length)
+void TofloatAddr(float* dest, uint8_t* from, uint8_t length)
 {
   char strdest[length];
 	memcpy(strdest,from,length);
@@ -93,9 +91,9 @@ void ToDoubleAddr(double* dest, uint8_t* from, uint8_t length)
 	*dest = atof(strdest);
 }
 
-void pos2googAddr(double* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
+void pos2googAddr(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
 {
-	double mnt,out;
+	float mnt,out;
 	uint8_t deg;
 	char strMnt[8], strDeg[3], strtemp[length];
 	memcpy(strtemp,from,length);
@@ -113,7 +111,7 @@ void pos2googAddr(double* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
 		}
 	}
 	out=deg+mnt/60;
-	if (_cPos=='W'|_cPos=='S')		*dest=-out;
-	else if (_cPos=='E'|_cPos=='N') *dest=out;
+	if (_cPos=='W'||_cPos=='S')		*dest=-out;
+	else if (_cPos=='E'||_cPos=='N') *dest=out;
 	else *dest=0;
 }

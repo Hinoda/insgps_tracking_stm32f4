@@ -15,28 +15,28 @@
 /* Function Definitions */
 
 /*
- * Arguments    : const double v[3]
- *                double d[9]
+ * Arguments    : const float v[3]
+ *                float d[9]
  * Return Type  : void
  */
-void b_diag(const double v[3], double d[9])
+void b_diag(const float v[3], float d[9])
 {
   int j;
-  memset(&d[0], 0, 9U * sizeof(double));
+  memset(&d[0], 0, 9U * sizeof(float));
   for (j = 0; j < 3; j++) {
     d[j + 3 * j] = v[j];
   }
 }
 
 /*
- * Arguments    : const double v[6]
- *                double d[36]
+ * Arguments    : const float v[6]
+ *                float d[36]
  * Return Type  : void
  */
-void diag(const double v[6], double d[36])
+void diag(const float v[6], float d[36])
 {
   int j;
-  memset(&d[0], 0, 36U * sizeof(double));
+  memset(&d[0], 0, 36U * sizeof(float));
   for (j = 0; j < 6; j++) {
     d[j + 6 * j] = v[j];
   }

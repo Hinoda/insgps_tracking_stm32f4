@@ -3,7 +3,7 @@
 #define XSBUFF_SIZE	RXBUFF_SIZE 
 #define GPS_SENTENCES	2
 #define RTK_SENTENCES	2
-#define PI 3.14159265
+#define PI 3.141592654
 
 #include <stdio.h>
 #include <stdint.h>
@@ -11,15 +11,15 @@
 #include <math.h>
 #include <string.h>
 
-extern double zI[10];
-extern double zG[7];
-extern double gpstime;
-extern double head;
-extern double speed;
-extern int gpsflag;
+extern float zI[10];
+extern float zG[7];
+extern float gpstime;
+extern float head;
+extern float speed;
+extern _Bool gpsflag;
 extern _Bool started;
 //extern uint8_t gpsbuff[RXBUFF_SIZE];
-void pos2googAddr(double* dest, uint8_t* from, uint8_t length, uint8_t _cPos);
-void ToDoubleAddr(double* dest, uint8_t* from, uint8_t length);
+void pos2googAddr(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos);
+void TofloatAddr(float* dest, uint8_t* from, uint8_t length);
 void GPSDataProcess(void);
 void INSDataProcess(void);

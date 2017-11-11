@@ -47,14 +47,13 @@ void rt_OneStep(void)
 }
 
 uint16_t ID[3];
-uint16_t elapsedTime;
 int main(void)
 {
   //uint16_t i;
   //uint16_t cmdbuff[16];
   //SystemCoreClockUpdate();
   /* Enable SysTick at 5ms interrupt */
-  SysTick_Config(SystemCoreClock/100);//10ms
+  SysTick_Config(SystemCoreClock/50);//10ms
   
   delay_01ms(20000);
   init_board();
@@ -62,15 +61,11 @@ int main(void)
 
   //reset_adis();
 	enable_gps();
-	delay_01ms(20000);
   IMU_Quest_initialize();
   while(1){
  		if(tick_flag){
 			tick_flag = 0;
-			/* Reset Elapse Timer*/
-			TIM7->SR  = 0;		// clear overflow flag
-			TIM7->CNT = 0;
-			TIM7->CR1 = 1;		// enable Timer7
+			ElapseRestart();
 			/* Calcutalte zI+zG data */
 
 			rt_OneStep();							/* IMU_Quest: Get IMU data. Find Euler angles */
@@ -82,7 +77,7 @@ int main(void)
 				rxflag = 0;
 			}
 			
-			if (1){
+			if (started){
 				/* Mechanize and EKF */
 				insgps_v5_1(zI, zG, gpsflag, dt, g0, a, e, we, 
 										Q, R, PVA, bias, Pk_1, xk_1);
@@ -95,8 +90,7 @@ int main(void)
 				}
 			}
 			gpsflag = 0;
-			elapsedTime=TIM7->CNT;
-			TIM7->CR1 = 0;		// stop Timer7
+			ElapseGet(&elapsedTime1);
 		}
   }
 }

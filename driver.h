@@ -7,6 +7,7 @@
 #define brIMU 112500
 #include "stm32f4xx.h"
 #include "misc.h"
+extern uint32_t elapsedTime1;
 extern double   marg[15];
 extern double   euler[3];
 extern uint8_t  rxbuff[RXBUFF_SIZE];
@@ -35,6 +36,8 @@ void delay_01ms(uint16_t period);
 	Define TIM7 for calculating elapsed time
   */
 void ElapseDef_001ms(uint16_t period);
+void ElapseGet(uint32_t* elapsedTime);
+void ElapseRestart(void);
 //-----------------------------------
 /**
 	
@@ -62,7 +65,7 @@ void cmdw_adis(uint16_t data);
 	using UART5 transmit PVA results to laptop
 	transmit buffer is
   */
-void send_PVA(double PVA[10],double zG[7]);
+void send_PVA(float PVA[10],float zG[7]);
 
 
 /**

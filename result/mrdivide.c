@@ -15,13 +15,13 @@
 /* Function Definitions */
 
 /*
- * Arguments    : double A[90]
- *                const double B[36]
+ * Arguments    : float A[90]
+ *                const float B[36]
  * Return Type  : void
  */
-void mrdivide(double A[90], const double B[36])
+void mrdivide(float A[90], const float B[36])
 {
-  double b_A[36];
+  float b_A[36];
   signed char ipiv[6];
   int k;
   int j;
@@ -30,10 +30,10 @@ void mrdivide(double A[90], const double B[36])
   int jp;
   int ix;
   int jAcol;
-  double temp;
+  float temp;
   int i;
-  double s;
-  memcpy(&b_A[0], &B[0], 36U * sizeof(double));
+  float s;
+  memcpy(&b_A[0], &B[0], 36U * sizeof(float));
   for (k = 0; k < 6; k++) {
     ipiv[k] = (signed char)(1 + k);
   }

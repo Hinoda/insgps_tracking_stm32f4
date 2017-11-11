@@ -17,7 +17,7 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void Cbn_31(const double euler[3], double Cbn[9]);
+void Cbn_31(const float euler[3], float Cbn[9]);
 
 #endif
 

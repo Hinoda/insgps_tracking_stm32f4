@@ -15,26 +15,26 @@
 /* Function Definitions */
 
 /*
- * Arguments    : double I[225]
+ * Arguments    : float I[225]
  * Return Type  : void
  */
-void b_eye(double I[225])
+void b_eye(float I[225])
 {
   int k;
-  memset(&I[0], 0, 225U * sizeof(double));
+  memset(&I[0], 0, 225U * sizeof(float));
   for (k = 0; k < 15; k++) {
     I[k + 15 * k] = 1.0;
   }
 }
 
 /*
- * Arguments    : double I[9]
+ * Arguments    : float I[9]
  * Return Type  : void
  */
-void eye(double I[9])
+void eye(float I[9])
 {
   int k;
-  memset(&I[0], 0, 9U * sizeof(double));
+  memset(&I[0], 0, 9U * sizeof(float));
   for (k = 0; k < 3; k++) {
     I[k + 3 * k] = 1.0;
   }

@@ -16,11 +16,11 @@
 /*
  * matran xoay DCM Cbn
  *  euler=3*1;
- * Arguments    : const double euler[3]
- *                double Cbn[9]
+ * Arguments    : const float euler[3]
+ *                float Cbn[9]
  * Return Type  : void
  */
-void Cbn_31(const double euler[3], double Cbn[9])
+void Cbn_31(const float euler[3], float Cbn[9])
 {
   /* Ci1 */
   /* Ci2 */
