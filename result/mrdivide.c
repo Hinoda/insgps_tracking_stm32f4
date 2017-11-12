@@ -2,12 +2,12 @@
  * File: mrdivide.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 09-Nov-2017 10:12:01
+ * C/C++ source code generated on  : 12-Nov-2017 15:05:52
  */
 
 /* Include Files */
 #include "Cbn_31.h"
-#include "insgps_v5_1.h"
+#include "insgps_v6_0.h"
 #include "normC.h"
 #include "skew_mat3.h"
 #include "mrdivide.h"
@@ -19,7 +19,7 @@
  *                const float B[36]
  * Return Type  : void
  */
-void mrdivide(float A[90], const float B[36])
+void b_mrdivide(float A[90], const float B[36])
 {
   float b_A[36];
   signed char ipiv[6];
@@ -130,6 +130,36 @@ void mrdivide(float A[90], const float B[36])
         A[jAcol + 15 * jp] = temp;
       }
     }
+  }
+}
+
+/*
+ * Arguments    : const float A[30]
+ *                const float B[4]
+ *                float y[30]
+ * Return Type  : void
+ */
+void mrdivide(const float A[30], const float B[4], float y[30])
+{
+  int r1;
+  int r2;
+  float a21;
+  float a22;
+  int k;
+  if (fabs(B[1]) > fabs(B[0])) {
+    r1 = 1;
+    r2 = 0;
+  } else {
+    r1 = 0;
+    r2 = 1;
+  }
+
+  a21 = B[r2] / B[r1];
+  a22 = B[2 + r2] - a21 * B[2 + r1];
+  for (k = 0; k < 15; k++) {
+    y[k + 15 * r1] = A[k] / B[r1];
+    y[k + 15 * r2] = (A[15 + k] - y[k + 15 * r1] * B[2 + r1]) / a22;
+    y[k + 15 * r1] -= y[k + 15 * r2] * a21;
   }
 }
 

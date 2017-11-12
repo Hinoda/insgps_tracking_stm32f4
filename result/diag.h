@@ -2,7 +2,7 @@
  * File: diag.h
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 09-Nov-2017 10:12:01
+ * C/C++ source code generated on  : 12-Nov-2017 15:05:52
  */
 
 #ifndef DIAG_H
@@ -17,7 +17,7 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void b_diag(const float v[3], float d[9]);
+void b_diag(const float v[2], float d[4]);
 void diag(const float v[6], float d[36]);
 
 #endif

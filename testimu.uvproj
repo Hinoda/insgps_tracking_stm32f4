@@ -565,9 +565,9 @@
               <FilePath>.\result\eye.c</FilePath>
             </File>
             <File>
-              <FileName>insgps_v5_1.c</FileName>
+              <FileName>insgps_v6_0.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\insgps_v5_1.c</FilePath>
+              <FilePath>.\result\insgps_v6_0.c</FilePath>
             </File>
             <File>
               <FileName>mrdivide.c</FileName>

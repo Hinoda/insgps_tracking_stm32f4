@@ -2,12 +2,12 @@
  * File: skew_mat3.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 09-Nov-2017 10:12:01
+ * C/C++ source code generated on  : 12-Nov-2017 15:05:52
  */
 
 /* Include Files */
 #include "Cbn_31.h"
-#include "insgps_v5_1.h"
+#include "insgps_v6_0.h"
 #include "normC.h"
 #include "skew_mat3.h"
 

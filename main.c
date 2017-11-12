@@ -3,7 +3,7 @@
 #include "system_timetick.h"
 
 #include "driver.h"
-#include "insgps_v5_1.h"
+#include "insgps_v6_0.h"
 #include "initialize.h"
 #include "genDataGetProcess.h"
 #include "IMU_Quest.h"                 /* Model's header file */
@@ -79,7 +79,7 @@ int main(void)
 			
 			if (started){
 				/* Mechanize and EKF */
-				insgps_v5_1(zI, zG, gpsflag, dt, g0, a, e, we, 
+				insgps_v6_0(zI, zG, gpsflag, dt, g0, a, e, we, 
 										Q, R, PVA, bias, Pk_1, xk_1);
 				send_PVA(PVA,zG);				/* Transmit PVA to UART5 */
 			}

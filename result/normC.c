@@ -2,12 +2,12 @@
  * File: normC.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 09-Nov-2017 10:12:01
+ * C/C++ source code generated on  : 12-Nov-2017 15:05:52
  */
 
 /* Include Files */
 #include "Cbn_31.h"
-#include "insgps_v5_1.h"
+#include "insgps_v6_0.h"
 #include "normC.h"
 #include "skew_mat3.h"
 #include "power.h"
@@ -42,7 +42,7 @@ void normC(float C[9], float Cbn[9])
     }
   }
 
-  power(*(float (*)[3])&C[0], x);
+  b_power(*(float (*)[3])&C[0], x);
   y = x[0];
   for (k = 0; k < 2; k++) {
     y += x[k + 1];
@@ -61,7 +61,7 @@ void normC(float C[9], float Cbn[9])
     }
   }
 
-  power(*(float (*)[3])&C[3], x);
+  b_power(*(float (*)[3])&C[3], x);
   y = x[0];
   for (k = 0; k < 2; k++) {
     y += x[k + 1];
@@ -72,7 +72,7 @@ void normC(float C[9], float Cbn[9])
     C[3 + k] /= y;
   }
 
-  power(*(float (*)[3])&C[6], x);
+  b_power(*(float (*)[3])&C[6], x);
   y = x[0];
   for (k = 0; k < 2; k++) {
     y += x[k + 1];
