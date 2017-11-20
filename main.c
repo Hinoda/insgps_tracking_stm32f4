@@ -1,3 +1,6 @@
+
+/********** Include section ***************************************************/
+
 #include "stm32f4xx.h"
 #include "misc.h"
 #include "system_timetick.h"
@@ -16,81 +19,129 @@
 #include "Cbn_31_terminate.h"
 #include "Cbn_31_initialize.h"
 
+/********** Local (static) variable definition ********************************/
 
 static boolean_T OverrunFlag = 0;
+uint8_t gpsflag = 0x00;
+uint8_t started = 0x00;
+uint16_t ID[3];
+uint16_t i = 0;
+uint8_t commaIndex[23];
+uint16_t timesRun = 0;
+/********** Local function definition section *********************************/
 
 void rt_OneStep(void)
 {
-  /* Disable interrupts here */
+	/* Disable interrupts here */
+	/* Check for overrun */
+	if (OverrunFlag++) {
+		rtmSetErrorStatus(IMU_Quest_M, "Overrun");
+		return;
+	}
 
-  /* Check for overrun */
-  if (OverrunFlag++) {
-    rtmSetErrorStatus(IMU_Quest_M, "Overrun");
-    return;
-  }
+	/* Save FPU context here (if necessary) */
+	/* Re-enable timer or interrupt here */
+	/* Set model inputs here */
 
-  /* Save FPU context here (if necessary) */
-  /* Re-enable timer or interrupt here */
-  /* Set model inputs here */
+	/* Step the model */
+	IMU_Quest_step();
 
-  /* Step the model */
-  IMU_Quest_step();
+	/* Get model outputs here */
 
-  /* Get model outputs here */
+	/* Indicate task complete */
+	OverrunFlag--;
 
-  /* Indicate task complete */
-  OverrunFlag--;
-
-  /* Disable interrupts here */
-  /* Restore FPU context here (if necessary) */
-  /* Enable interrupts here */
+	/* Disable interrupts here */
+	/* Restore FPU context here (if necessary) */
+	/* Enable interrupts here */
 }
 
-uint16_t ID[3];
+
 int main(void)
 {
-  //uint16_t i;
-  //uint16_t cmdbuff[16];
-  //SystemCoreClockUpdate();
-  /* Enable SysTick at 5ms interrupt */
-  SysTick_Config(SystemCoreClock/50);//10ms
-  
-  delay_01ms(20000);
-  init_board();
+	SystemCoreClockUpdate();
+	/* Enable SysTick at 5ms interrupt */
+	SysTick_Config(SystemCoreClock/100);//10ms
+	delay_01ms(20000);
+	
+	init_board();
 	ElapseDef_001ms(10000);
 
-  //reset_adis();
+	//reset_adis();
 	enable_gps();
-  IMU_Quest_initialize();
-  while(1){
- 		if(tick_flag){
+	IMU_Quest_initialize();
+	while(1){
+		if(tick_flag){
 			tick_flag = 0;
-			ElapseRestart();
 			/* Calcutalte zI+zG data */
-
-			rt_OneStep();							/* IMU_Quest: Get IMU data. Find Euler angles */
-			INSDataProcess();					/* Process & Store new INS data */
-			
-			receive_data();						/* Get GPS data */
-			if (rxflag){
-				GPSDataProcess();				/* Process & Store new GPS data */
+			rt_OneStep();				/* IMU_Quest: Get IMU data. Find Euler angles */
+			INSDataProcess();			/* Process & Store new INS data */
+			ElapseGet(&elapsedTime1);
+			ElapseRestart();
+			receive_data();				/* Get GPS data */
+			timesRun++;
+			if(rxflag == 1){
 				rxflag = 0;
-			}
-			
-			if (started){
-				/* Mechanize and EKF */
-				insgps_v6_0(zI, zG, gpsflag, dt, g0, a, e, we, 
-										Q, R, PVA, bias, Pk_1, xk_1);
-				send_PVA(PVA,zG);				/* Transmit PVA to UART5 */
-			}
-			else{
-				if (gpsflag == 1){
-					initialize();					/* Init const params (a,e,P0,Q0)*/
-					started = 1;
+				i++;
+				//if( i == 10)
+				//{
+				// (void)i;
+				//}
+				AssignGPSComma(commaIndex);
+				gpsflag = CheckGPSflag(commaIndex);
+				if(gpsflag == 1)
+				{
+					gpsflag = 0;
+					GPSDataProcess(started, commaIndex);		/* Process & Store new GPS data */
+					//sendMode("RECEIVED");
+					//send_zG(zG,timesRun);
+					send_zG(zG,elapsedTime1);
+				}
+				else
+				{
+					sendMode("FAIL");
+					//send_zG(zG,timesRun);
+					//send_zG(zG,elapsedTime1);
+										
+					//static uint8_t firstTime = 0;
+					//if(firstTime == 0)
+					//{
+					//	firstTime = 1;
+					//	delay_01ms(65000);
+					//}
 				}
 			}
-			gpsflag = 0;
-			ElapseGet(&elapsedTime1);
+			else
+			{
+				sendMode("NO");
+				//send_zG(zG,timesRun);
+				//send_zG(zG,elapsedTime1);
+			}
+			
+			//send_zG(zG,1);
+			//delay_01ms(5);
+			//sendMode(elapsedTime1);
+//			else
+//				CheckGPSflag(&gpsflag);			
+//			if (tick_count>=50000){
+//				if (started){
+//					/* Mechanize and EKF */
+//			dt = elapsedTime1;
+//					insgps_v6_0(zI, zG, gpsflag, dt, g0, a, e, we, 
+//											Q, R, PVA, bias, Pk_1, xk_1);
+//					send_PVA(PVA,zG,gpsflag);				/* Transmit PVA to UART5 */
+//				}
+//				else{
+//					if (gpsflag == 1){
+//						initialize();					/* Init const params (a,e,P0,Q0)*/
+//						started = 1;
+//					}
+//				}
+//			}
+
+			for (uint8_t i=0;i<7;i++)	zG[i]=0;
+			for (uint8_t i=0;i<10;i++)	zI[i]=0;
+			
 		}
-  }
+	}
 }

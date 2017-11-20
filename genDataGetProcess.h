@@ -7,19 +7,23 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <stdlib.h>
-#include <math.h>
 #include <string.h>
+#include <math.h>
 
 extern float zI[10];
 extern float zG[7];
 extern float gpstime;
 extern float head;
 extern float speed;
-extern _Bool gpsflag;
-extern _Bool started;
+
 //extern uint8_t gpsbuff[RXBUFF_SIZE];
+void posToGoog(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos);
 void pos2googAddr(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos);
-void TofloatAddr(float* dest, uint8_t* from, uint8_t length);
-void GPSDataProcess(void);
+void ToFloat(float* dest, uint8_t* from, uint8_t length);
+void ToInt(int* dest, uint8_t* from, uint8_t length);
+void AssignGPSComma(uint8_t commaIndex[]);
+uint8_t CheckGPSflag(uint8_t commaIndex[]);
+void GPSDataProcess(uint8_t started, uint8_t commaIndex[]);
 void INSDataProcess(void);

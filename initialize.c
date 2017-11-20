@@ -8,15 +8,14 @@ float we;					//toc do quay TD
 float PVA[10];
 float bias[6];
 float Q[144], R[36];
-float Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi 
-														chi muon delay, ko xuat ra*/
+float Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
 float xPI_180 = 0.017453292519943;
 float x180_PI = 57.295779513082323;
 
 void initialize(void){
 	/*const*/
 
-	dt = 0.1/5;
+//	dt = 0.1/5;
 	g0 = 9.80665;
 	a = 6378137;
 	e = 0.08181919;

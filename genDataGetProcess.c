@@ -13,65 +13,72 @@
  */
 int ind;
 float zI[10];
-float zG[7]={0,0,0,0,0,0,0};
+float zG[7];
 float gpstime;
 float head;
 float speed;
-_Bool gpsflag = 0;
-_Bool started = 0;
-
-//uint8_t pxsbuff[XSBUFF_SIZE];
 float height_=0;
-void GPSDataProcess(void)
+int numofsat;
+
+
+void AssignGPSComma(uint8_t commaIndex[])
 {
-	//memcpy(pxsbuff,xsbuff,XSBUFF_SIZE);
-	for (uint8_t i=0;i<7;i++)	zG[i]=0;
-	uint8_t comma_idx[23];
-	uint8_t comma_counter=0;
-	
-	for(uint8_t pGPS=0;pGPS<130;pGPS++){
-		if(xsbuff[pGPS]==','){
-			comma_idx[comma_counter++]=pGPS;
+	uint8_t pGPS=0, commaCounter = 0;
+	memset(commaIndex,0,23);
+	while(pGPS<rxlen)
+	{
+		if(xsbuff[pGPS]==',')
+		{
+			commaIndex[commaCounter]=pGPS;
+			commaCounter++;
 		}
+		pGPS++;
 	}
-	
-	if (comma_counter == 23){//check them CRC
-		//---------SPEED------------
-		TofloatAddr(&speed,xsbuff+comma_idx[4]+1,comma_idx[5]-comma_idx[4]-1);
-		speed=speed*0.51444444;
-		//---------HEAD------------	
-		if (started){		
-			TofloatAddr(&head,xsbuff+comma_idx[0]+1,comma_idx[1]-comma_idx[0]-1);
-			head=head*xPI_180;
-		}
-		else{
-			head=euler[2]*0.1*xPI_180;
-		}
-		zG[4]=speed*cos(head);
-		zG[5]=speed*sin(head);
-		//---------TIME-------------
-		TofloatAddr(&zG[0],xsbuff+comma_idx[9]+1,comma_idx[10]-comma_idx[9]-1);
-		//---------HEIGHT-----------
-		TofloatAddr(&zG[3],xsbuff+comma_idx[17]+1,comma_idx[18]-comma_idx[17]-1);
-		//---------LATLON-----------
-		pos2googAddr(&zG[1],xsbuff+comma_idx[10]+1,comma_idx[11]-comma_idx[10]-1,xsbuff[comma_idx[11]+1]);
-		pos2googAddr(&zG[2],xsbuff+comma_idx[12]+1,comma_idx[13]-comma_idx[12]-1,xsbuff[comma_idx[13]+1]);
-		zG[1]=zG[1]*xPI_180;
-		zG[2]=zG[2]*xPI_180;
-		/**************************************************************************************/
-		/** TODO (HaiDang1#1#): watch turns of previous fb */
-		zG[6]=(height_-zG[3])/(zG[0]-gpstime);
-		height_=zG[3];
-		gpstime=zG[0];
-		/** xem height -- neu mat 2 lan gps thi sao */
-		//gpsflag=NOGPS;//check them CRC
+}
+
+uint8_t CheckGPSflag(uint8_t commaIndex[])
+{
+	ToInt(&numofsat,xsbuff+commaIndex[15]+1,commaIndex[16]-commaIndex[15]-1);
+	if (numofsat>=4) return 1;
+	else return 0;
+}
+
+void GPSDataProcess(uint8_t started, uint8_t commaIndex[])
+{
+	memset(zG,0,7);
+	//---------SPEED------------
+	ToFloat(&speed,xsbuff+commaIndex[4]+1,commaIndex[5]-commaIndex[4]-1);
+	speed=speed*0.51444444;
+	//---------HEAD------------	
+	if (started){		
+		ToFloat(&head,xsbuff+commaIndex[0]+1,commaIndex[1]-commaIndex[0]-1);
+		head=head*xPI_180;
 	}
-	if ((zG[1]!=0)&(zG[2]!=0)&(zG[3]!=0))
-		gpsflag = 1;
+	else{
+		head=euler[2]*0.1*xPI_180;
+	}
+	zG[4]=speed*cos(head);
+	zG[5]=speed*sin(head);
+	//---------TIME-------------
+	ToFloat(&zG[0],xsbuff+commaIndex[9]+1,commaIndex[10]-commaIndex[9]-1);
+	//---------HEIGHT-----------
+	ToFloat(&zG[3],xsbuff+commaIndex[17]+1,commaIndex[18]-commaIndex[17]-1);
+	//---------LATLON-----------
+	posToGoog(&zG[1],xsbuff+commaIndex[10]+1,commaIndex[11]-commaIndex[10]-1,xsbuff[commaIndex[11]+1]);
+	posToGoog(&zG[2],xsbuff+commaIndex[12]+1,commaIndex[13]-commaIndex[12]-1,xsbuff[commaIndex[13]+1]);
+	zG[1]=zG[1]*xPI_180;
+	zG[2]=zG[2]*xPI_180;
+	/**************************************************************************************/
+	/** TODO (HaiDang1#1#): watch turns of previous fb */
+	zG[6]=(height_-zG[3])/(zG[0]-gpstime);
+	height_=zG[3];
+	gpstime=zG[0];
+	/** xem height -- neu mat 2 lan gps thi sao */
 }
 
 void INSDataProcess(void)
 {
+	memset(zI,0,10);
 	zI[0] = ind++;
 	zI[1] = euler[0]*0.1*xPI_180;          // euler (unit rad)
 	zI[2] = euler[1]*0.1*xPI_180;
@@ -83,35 +90,134 @@ void INSDataProcess(void)
 	zI[8] = -marg[5]*9.80665*0.001;
 	zI[9] = -marg[6]*9.80665*0.001;
 }
-void TofloatAddr(float* dest, uint8_t* from, uint8_t length)
+
+//void ToFloat(float* dest, uint8_t* from, uint8_t length)
+//{
+//  char strdest[30];//khong dat chieu dai thay doi, nhu malloc, calloc no se luu vao heap
+//	memset(strdest, 0, 30);//nen reset bien truoc khi chay
+//	memcpy(strdest,from,length);
+//	strdest[length]='\0';
+//	double temp;
+//	
+//	*dest = atof(strdest);//ko nen dung atof atoi (thu vien standard) co the dung sscanf
+//}
+void ToFloat(float* dest, uint8_t* from, uint8_t length)
 {
-  char strdest[length];
-	memcpy(strdest,from,length);
-	strdest[length]='\0';
-	*dest = atof(strdest);
+	int phanNguyen = 0;
+	int phanThapPhan = 0;
+	int viTriDauCham = 0;
+	uint8_t i;
+	uint32_t soChia = 1;
+	for ( i = 0; i < length; i++)
+	{
+		if((from[i] <= '9')&&(from[i] >= '0')&&(from[i] != '.'))
+		{
+			phanNguyen = (from[i] - 0x30 ) + phanNguyen * 10;	
+		}
+		else if (from[i] == '.')
+		{
+			viTriDauCham = i;
+			break;
+		}
+		else
+		{
+			*dest=0;
+			return;
+		}
+	}
+	for ( i = viTriDauCham + 1; i < length; i++)
+	{
+		phanThapPhan = (from[i] - 0x30 ) + phanThapPhan * 10;
+		soChia *= 10;
+	}
+
+	*dest = (float)phanNguyen + (float)(phanThapPhan) / soChia;
 }
 
-void pos2googAddr(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
+//void ToInt(int* dest, uint8_t* from, uint8_t length)
+//{
+//  char strdest[30];
+//	memset(strdest, 0, 30);
+//	memcpy(strdest,from,length);
+//	strdest[length]='\0';
+//	*dest = atoi(strdest);
+//}
+
+void ToInt(int* dest, uint8_t* from, uint8_t length)
 {
-	float mnt,out;
-	uint8_t deg;
-	char strMnt[8], strDeg[3], strtemp[length];
-	memcpy(strtemp,from,length);
-	strtemp[length]='\0';
+	int temp = 0;
+	uint8_t i;
+	for ( i = 0; i < length; i++)
+	{
+		if ((from[i] <= '9')&&(from[i] >= '0')){
+			temp = (from[i] - 0x30 ) + temp * 10;
+		}
+		else{
+			*dest=0;
+			return;
+		}
+	}
+	*dest = temp;
+}
+
+
+
+//void pos2googAddr(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
+//{
+//	float mnt,out;
+//	int deg;
+//	char strMnt[8], strDeg[3], strtemp[30];
+//	memcpy(strtemp,from,length);
+//	strtemp[length]='\0';
+//	for(uint8_t pGPS=0;pGPS<length;pGPS++){
+//		if(strtemp[pGPS]=='.'){
+//			memcpy(strMnt,strtemp+pGPS-2,length-pGPS+2);
+//			strMnt[length-pGPS+2]='\0';
+//			//mnt = atof(strMnt);
+//			ToFloat(&mnt, strMnt, length-pGPS+2);
+//			//----------------------------
+//			memcpy(strDeg,strtemp,pGPS-2);
+//			strDeg[pGPS-2]='\0';
+//			//deg = atoi(strDeg);
+//			ToInt(&deg, strDeg, pGPS-1);
+//			break;
+//		}
+//	}
+//	out=deg+mnt/60;
+//	if (_cPos=='W'||_cPos=='S')		*dest=-out;
+//	else if (_cPos=='E'||_cPos=='N') *dest=out;
+//	else *dest=0;
+//}
+
+void posToGoog(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
+{
+	float mnt = 0, out = 0;
+	int deg = 0;
+	uint8_t* extractMntCursor;
+	uint8_t mntLength, degLength;
 	for(uint8_t pGPS=0;pGPS<length;pGPS++){
-		if(strtemp[pGPS]=='.'){
-			memcpy(strMnt,strtemp+pGPS-2,length-pGPS+2);
-			strMnt[length-pGPS+2]='\0';
-			mnt = atof(strMnt);
-			//----------------------------
-			memcpy(strDeg,strtemp,pGPS-2);
-			strDeg[pGPS-2]='\0';
-			deg = atoi(strDeg);
+		if(*(from+pGPS)=='.'){//
+			extractMntCursor = from + pGPS - 2;
+			mntLength = length - pGPS + 2;
+			degLength = pGPS-2;
 			break;
 		}
 	}
-	out=deg+mnt/60;
-	if (_cPos=='W'||_cPos=='S')		*dest=-out;
-	else if (_cPos=='E'||_cPos=='N') *dest=out;
-	else *dest=0;
+	ToFloat(&mnt, extractMntCursor, mntLength);
+	ToInt(&deg, from, degLength);
+	out = (float)deg+mnt/60;
+	switch (_cPos)
+	{
+		case 'N' :
+		case 'E' :
+			*dest=out;
+			break;
+		case 'W' :
+		case 'S' :
+			*dest=-out;
+			break;
+		default:
+			*dest=0;
+			break;
+	}
 }

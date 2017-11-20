@@ -373,7 +373,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_STDPERIPH_DRIVER, STM32F40_41xxx, HSE_VALUE=8000000</Define>
+              <Define>USE_STDPERIPH_DRIVER, STM32F40_41xxx, HSE_VALUE=8000000, ARM_MATH_CM4</Define>
               <Undefine></Undefine>
               <IncludePath>..\Quest16480;.\STM32F4xx_StdPeriph_Driver\inc;.\Matlab;F:\R2016a\extern\include;F:\R2016a\simulink\include;F:\R2016a\rtw\c\src;F:\R2016a\rtw\c\src\ext_mode\common;F:\R2016a\rtw\c\ert;..\Quest16405_GPS_IMU2.2;.\result</IncludePath>
             </VariousControls>

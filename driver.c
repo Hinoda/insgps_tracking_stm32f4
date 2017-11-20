@@ -1,8 +1,9 @@
 #include "driver.h"
-#include "genDataGetProcess.h"
+#include <stdio.h>
+#include <string.h>
 double  marg[15];
 double  euler[3];
-uint32_t elapsedTime1;
+int16_t elapsedTime1;
 uint8_t txbuff[TXBUFF_SIZE];
 uint8_t gpsbuff[RXBUFF_SIZE];
 uint8_t rtkbuff[RXBUFF_SIZE];
@@ -10,6 +11,8 @@ uint8_t xsbuff[XSBUFF_SIZE];
 uint16_t rxlen  = 0;
 uint16_t rxflag = 0;
 uint16_t rxfull = 0;
+
+
 
 void init_board(void)
 {
@@ -216,8 +219,7 @@ void init_board(void)
  
 }
 
-void DMA1_Stream2_IRQHandler(void)
-{
+void DMA1_Stream2_IRQHandler(void){
   /* Clear the DMA1_Stream2 TCIF2 pending bit */
   DMA_ClearITPendingBit(DMA1_Stream2, DMA_IT_TCIF2);
 
@@ -229,8 +231,7 @@ void DMA1_Stream2_IRQHandler(void)
 	DMA_Cmd(DMA1_Stream2, ENABLE);
 }
 
-void DMA1_Stream5_IRQHandler(void)
-{
+void DMA1_Stream5_IRQHandler(void){
   /* Clear the DMA1_Stream5 TCIF2 pending bit */
   DMA_ClearITPendingBit(DMA1_Stream5, DMA_IT_TCIF5);
 
@@ -250,14 +251,14 @@ void enable_gps(void){
 void receive_data(void){
 	uint16_t i, k, k1, k2, count;
 
-	k1 = DMA1_Stream2->NDTR;		 // gps UART4
-	k1 = RXBUFF_SIZE - k1;
+	k1 = DMA1_Stream2->NDTR;		 // gps UART4					/* giam con 0 la nhan xong */
+	k1 = RXBUFF_SIZE - k1;											/* size-so byte con phai gui*/
 
 	k2 = DMA1_Stream5->NDTR;		 // rtk USART2
 	k2 = RXBUFF_SIZE - k2;
 
 	/* check if GPS and RTK data are unavailable then skip */
-	if ((k1==0)&&(k2==0))		return;
+	if ((k1==0)&&(k2==0))		return;								/* so byte da nhan>0 */
 	
 	if (k1) {	 			// check GPS data
 		k = k1;
@@ -480,7 +481,7 @@ void cmdr_adis(uint16_t *buff, uint16_t addr, uint16_t N){
 
 void cmdw_adis(uint16_t data){
   	uint16_t temp, j;
-
+		(void)temp;
   	GPIO_ResetBits(GPIOB,GPIO_Pin_12);		// ADIS_STE = 0
 		for(j=0; j<500; j++);
 
@@ -528,8 +529,7 @@ void delay_01ms(uint16_t period){
   	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, DISABLE);
 }
 
-void ElapseDef_001ms(uint16_t period)
-{
+void ElapseDef_001ms(uint16_t period){
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
 	TIM7->PSC = 839;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
 	TIM7->ARR = period-1;
@@ -537,20 +537,17 @@ void ElapseDef_001ms(uint16_t period)
 	TIM7->EGR = 1;		/* Generate an update event to reload the Prescaler value immediately */
 }
 
-void ElapseGet(uint32_t* elapsedTime)
-{
+void ElapseGet(int16_t* elapsedTime){
 	*elapsedTime=TIM7->CNT;
 	TIM7->CR1 = 0;		// stop Timer7
 }
 
-void ElapseRestart(void)
-{
+void ElapseRestart(void){
 	TIM7->SR  = 0;		// clear overflow flag
 	TIM7->CNT = 0;
 	TIM7->CR1 = 1;		// enable Timer7
 }
-void IntToStr5(int16_t u, uint8_t *y)
-{
+void IntToStr5(int16_t u, uint8_t *y){
 	int16_t a;
      
    a = u;
@@ -569,8 +566,7 @@ void IntToStr5(int16_t u, uint8_t *y)
    y[1] = a + 0x30;
 }
 
-void IntToStr6(int16_t u, uint8_t *y)
-{
+void IntToStr6(int16_t u, uint8_t *y){
 	int16_t a;
      
    a = u;
@@ -590,8 +586,7 @@ void IntToStr6(int16_t u, uint8_t *y)
    a = a / 10;
    y[1] = a + 0x30;
 }
-void IntToStr8(int16_t u, uint8_t *y)
-{
+void IntToStr8(int16_t u, uint8_t *y){
 	int16_t a;
      
    a = u;
@@ -675,7 +670,7 @@ void send_data(void){
 * lan2: 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000
 *
 */
-void send_PVA(float PVA[10],float zG[7]){
+void send_PVA(float PVA[10],float zG[7],uint8_t gpsflag){
 	uint16_t 	i, k;
 	int16_t  	temp;
 	float 		dtemp;//hold data
@@ -743,8 +738,72 @@ void send_PVA(float PVA[10],float zG[7]){
 			txbuff[k++] = ' ';
 		}
 	}
-	
+	txbuff[k++] = 13;//CR 0x0d
 	DMA_ClearFlag(DMA1_Stream7, DMA_FLAG_TCIF7);
 	DMA1_Stream7->NDTR = k;
 	DMA_Cmd(DMA1_Stream7, ENABLE);
 }
+
+void send_zG(float zG[7], int16_t _i){
+	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
+	//while(DMA_GetFlagStatus(DMA1_Stream7, DMA_FLAG_TCIF7) == 0);
+	//while(DMA1_Stream7->NDTR!= 0);
+	//UART5->DR=0;
+	uint16_t 	i=0, k=1;
+	int16_t  	temp;
+	float 		dtemp;//hold data
+
+	txbuff[0] = 10;//start line with LF
+	/* index */
+	temp  = (int16_t)_i;
+	IntToStr6(temp, &txbuff[k]);
+	k = k + 6;
+	txbuff[k++] = ' ';
+	
+	/* time => [s]*10 */
+	dtemp = zG[0]*10; 
+	temp  = (int16_t)dtemp;
+	IntToStr8(temp, &txbuff[k]);
+	k = k + 8;
+	txbuff[k++] = ' ';
+	
+	/* lat lon => [rad]*10^6 */
+	for (i=1; i<3; i++){
+		dtemp = zG[i]*1000000; 
+		temp  = (int16_t)dtemp;
+		IntToStr8(temp, &txbuff[k]);	
+		k = k + 8;
+		txbuff[k++] = ' ';
+	}
+	/* height VN VE VD => [m m/s]*10^3 */
+	for (i=3; i<7; i++){
+		dtemp = zG[i]*1000; 
+		temp  = (int16_t)dtemp;
+		IntToStr6(temp, &txbuff[k]);
+		k = k + 6;
+		txbuff[k++] = ' ';
+	}
+	txbuff[k++] = 13;
+	k++;
+	DMA_ClearFlag(DMA1_Stream7, DMA_FLAG_TCIF7);
+	DMA1_Stream7->NDTR = k;
+	DMA_Cmd(DMA1_Stream7, ENABLE);
+}
+void sendMode(uint8_t* myinfo){
+	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
+	//while(DMA_GetFlagStatus(DMA1_Stream7, DMA_FLAG_TCIF7) == 0);
+	//while(DMA1_Stream7->NDTR!= 0);
+	//UART5->DR=0;
+	uint16_t 	i = 0, k = 1;
+	while(myinfo[i]!='\0') i++;
+	txbuff[0] = 10;//start line with LF
+	txbuff[k++] = 42;
+	txbuff[k++] = ' ';
+	memcpy(&txbuff[k],myinfo,i);
+	k+=i;
+	txbuff[k++] = 13;
+	DMA_ClearFlag(DMA1_Stream7, DMA_FLAG_TCIF7);
+	DMA1_Stream7->NDTR = k;
+	DMA_Cmd(DMA1_Stream7, ENABLE);
+}
+
