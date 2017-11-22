@@ -24,6 +24,6 @@ void pos2googAddr(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos);
 void ToFloat(float* dest, uint8_t* from, uint8_t length);
 void ToInt(int* dest, uint8_t* from, uint8_t length);
 void AssignGPSComma(uint8_t commaIndex[]);
-uint8_t CheckGPSflag(uint8_t commaIndex[]);
+bool CheckGPSflag(uint8_t commaIndex[]);
 void GPSDataProcess(bool started, uint8_t commaIndex[]);
 void INSDataProcess(void);

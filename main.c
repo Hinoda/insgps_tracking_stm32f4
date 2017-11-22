@@ -32,15 +32,15 @@ bool gpsAvail = false;
 bool firstTime = false;
 uint16_t ID[3];
 uint16_t i = 0;
-uint8_t commaIndex[23];
+uint8_t g_commaIndex[23];
 uint16_t timesRun = 0;
-float dt, g0;
-float a, e;
-float we;
-float PVA[10];
-float bias[6];
-float Q[144], R[36];
-float Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
+float g_dt, g_g0;
+float g_a, g_e;
+float g_we;
+float g_PVA[10];
+float g_bias[6];
+float g_Q[144], g_R[36];
+float g_Pk_1[225], g_xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
 /********** Local function definition section *********************************/
 
 void rt_OneStep(void)
@@ -97,10 +97,10 @@ int main(void)
 			receive_data();				/* Get GPS data */
 			if(rxflag == 1)
             {
-                AssignGPSComma(commaIndex);
+                AssignGPSComma(g_commaIndex);
 				//gpsAvail = rxflag&(CheckGPSflag(commaIndex));
-				gpsAvail = CheckGPSflag(commaIndex);
-				GPSDataProcess(firstTime, commaIndex);
+				gpsAvail = CheckGPSflag(g_commaIndex);
+				GPSDataProcess(firstTime, g_commaIndex);
 				rxflag = 0;
             }
 			else
@@ -113,7 +113,7 @@ int main(void)
             {
                 if (gpsAvail)
                 {
-                    initialize(&dt, &g0, &a, &e, &we, PVA, bias, Q, R, Pk_1, xk_1);
+                    initialize(&g_dt, &g_g0, &g_a, &g_e, &g_we, g_PVA, g_bias, g_Q, g_R, g_Pk_1, g_xk_1);
                     firstTime = true;
                     gpsAvail = false;
                     delay_01ms(100);
@@ -126,15 +126,15 @@ int main(void)
             }
 			else //second third ...
             {
-                dt = elapsedTime1*pow(10,-5);
+                g_dt = elapsedTime1*pow(10,-5);
 				//dt = 0.01;
-				insgps_v6_0(zI, zG, gpsAvail, dt, g0, a, e, we, Q, R, PVA, bias, Pk_1, xk_1);
+				insgps_v6_0(zI, zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
                 sendMode("Cube is sending PVA. Please check your save mode!");
-				send_PVA(PVA,zG,gpsAvail);					/* Transmit PVA to UART5 */	
+				send_PVA(g_PVA,zG,gpsAvail);					/* Transmit PVA to UART5 */	
 				gpsAvail = false;
             }
-			memset(zI,0,10);
-			memset(zG,0,7);
+			for (uint8_t i=0;i<7;i++)	zG[i]=0;
+			for (uint8_t i=0;i<10;i++)	zI[i]=0;
 		}
 	}
 }

@@ -14,17 +14,17 @@
 int ind;
 float zI[10];
 float zG[7];
-float gpstime;
-float head;
-float speed;
+float gpstime=0;
+float head=0;
+float speed=0;
 float height_=0;
-int numofsat;
+int numofsat=0;
 
 
 void AssignGPSComma(uint8_t commaIndex[])
 {
 	uint8_t pGPS=0, commaCounter = 0;
-	memset(commaIndex,0,23);
+	memset(commaIndex,0,23*sizeof(uint8_t));
 	while(pGPS<rxlen)
 	{
 		if(xsbuff[pGPS]==',')
@@ -36,49 +36,52 @@ void AssignGPSComma(uint8_t commaIndex[])
 	}
 }
 
-uint8_t CheckGPSflag(uint8_t commaIndex[])
+bool CheckGPSflag(uint8_t commaIndex[])
 {
 	ToInt(&numofsat,xsbuff+commaIndex[15]+1,commaIndex[16]-commaIndex[15]-1);
-	if ((numofsat>=4)&&(rxflag == 1)) return 1;
-	else return 0;
+	if ((numofsat>=4)&&(rxflag == 1)) return true;
+	else return false;
 }
 
 void GPSDataProcess(bool started, uint8_t commaIndex[])
 {
-	memset(zG,0,7);
-	//---------SPEED------------
-	ToFloat(&speed,xsbuff+commaIndex[4]+1,commaIndex[5]-commaIndex[4]-1);
-	speed=speed*0.51444444;
-	//---------HEAD------------	
-	if (started){		
-		ToFloat(&head,xsbuff+commaIndex[0]+1,commaIndex[1]-commaIndex[0]-1);
-		head=head*xPI_180;
-	}
-	else{
-		head=euler[2]*0.1*xPI_180;
-	}
-	zG[4]=speed*cos(head);
-	zG[5]=speed*sin(head);
-	//---------TIME-------------
+	for (uint8_t i=0;i<7;i++)	zG[i]=0;
+	
+	//TIME
 	ToFloat(&zG[0],xsbuff+commaIndex[9]+1,commaIndex[10]-commaIndex[9]-1);
-	//---------HEIGHT-----------
+	gpstime=zG[0];
+	
+	//HEIGHT
 	ToFloat(&zG[3],xsbuff+commaIndex[17]+1,commaIndex[18]-commaIndex[17]-1);
-	//---------LATLON-----------
+	height_=zG[3];
+	
+	//LATLON
 	posToGoog(&zG[1],xsbuff+commaIndex[10]+1,commaIndex[11]-commaIndex[10]-1,xsbuff[commaIndex[11]+1]);
 	posToGoog(&zG[2],xsbuff+commaIndex[12]+1,commaIndex[13]-commaIndex[12]-1,xsbuff[commaIndex[13]+1]);
 	zG[1]=zG[1]*xPI_180;
 	zG[2]=zG[2]*xPI_180;
-	/**************************************************************************************/
-	/** TODO (HaiDang1#1#): watch turns of previous fb */
-	zG[6]=(height_-zG[3])/(zG[0]-gpstime);
-	height_=zG[3];
-	gpstime=zG[0];
-	/** xem height -- neu mat 2 lan gps thi sao */
+	
+	//SPEED
+	ToFloat(&speed,xsbuff+commaIndex[4]+1,commaIndex[5]-commaIndex[4]-1);
+	speed=speed*0.51444444;
+	
+	//HEAD
+	if (started){
+		ToFloat(&head,xsbuff+commaIndex[0]+1,commaIndex[1]-commaIndex[0]-1);
+		head=head*xPI_180;
+		zG[6]=0;
+	}
+	else{
+		head=euler[2]*0.1*xPI_180;
+		zG[6]=(height_-zG[3])/(zG[0]-gpstime);
+	}
+	zG[4]=speed*cos(head);
+	zG[5]=speed*sin(head);
 }
 
 void INSDataProcess(void)
 {
-	memset(zI,0,10);
+	for (uint8_t i=0;i<10;i++)	zI[i]=0;
 	zI[0] = ind++;
 	zI[1] = euler[0]*0.1*xPI_180;          // euler (unit rad)
 	zI[2] = euler[1]*0.1*xPI_180;

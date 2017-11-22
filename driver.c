@@ -589,8 +589,8 @@ void IntToStr6(int16_t u, uint8_t *y){
 	a = a / 10;
 	y[1] = a + 0x30;
 }
-void IntToStr8(int16_t u, uint8_t *y){
-	int16_t a;
+void IntToStr8(int32_t u, uint8_t *y){
+	int32_t a;
      
    a = u;
    if (a<0){ 
@@ -676,39 +676,40 @@ void send_data(void){
 void send_PVA(float PVA[10],float zG[7],bool gpsflag){
 	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	uint16_t 	i, k;
-	int16_t  	temp;
+	int32_t 	temp32;
+	int16_t 	temp16;
 	float 		dtemp;//hold data
 
 	txbuff[0] = 10;//start line with LF
 	k=1;
 	/* index */
 	dtemp = PVA[0]; 
-	temp  = (int16_t)dtemp;
-	IntToStr8(temp, &txbuff[k]);
+	temp32  = (int32_t)dtemp;
+	IntToStr8(temp32, &txbuff[k]);
 	k = k + 8;
 	txbuff[k++] = ' ';
 	//k++;
 	/* lat lon => [rad]*10^6 */
 	for (i=1; i<3; i++){
 		dtemp = PVA[i]*1000000;
-		temp  = (int16_t)dtemp;
-		IntToStr8(temp, &txbuff[k]);
+		temp32  = (int32_t)dtemp;
+		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
 	}
 	/* height VN VE VD => [m m/s]*10^3 */
 	for (i=3; i<7; i++){
 		dtemp = PVA[i]*1000;
-		temp  = (int16_t)dtemp;
-		IntToStr6(temp, &txbuff[k]);
+		temp16  = (int16_t)dtemp;
+		IntToStr6(temp16, &txbuff[k]);
 		k = k + 6;
 		txbuff[k++] = ' ';
 	}
 	/* roll pitch yaw => [rad]*10^6 */
 	for (i=7; i<10; i++){
 		dtemp = PVA[i]*1000000;
-		temp  = (int16_t)dtemp;
-		IntToStr8(temp, &txbuff[k]);
+		temp32  = (int32_t)dtemp;
+		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
 	}
@@ -720,24 +721,24 @@ void send_PVA(float PVA[10],float zG[7],bool gpsflag){
 		txbuff[k++] = ' ';
 		/* time => [s]*10 */
 		dtemp = zG[0]*10; 
-		temp  = (int16_t)dtemp;
-		IntToStr8(temp, &txbuff[k]);
+		temp32  = (int32_t)dtemp;
+		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
 		
 		/* lat lon => [rad]*10^6 */
 		for (i=1; i<3; i++){
 			dtemp = zG[i]*1000000; 
-			temp  = (int16_t)dtemp;
-			IntToStr8(temp, &txbuff[k]);	
+			temp32  = (int32_t)dtemp;
+			IntToStr8(temp32, &txbuff[k]);	
 			k = k + 8;
 			txbuff[k++] = ' ';
 		}
 		/* height VN VE VD => [m m/s]*10^3 */
 		for (i=3; i<7; i++){
 			dtemp = zG[i]*1000; 
-			temp  = (int16_t)dtemp;
-			IntToStr6(temp, &txbuff[k]);
+			temp16  = (int16_t)dtemp;
+			IntToStr6(temp16, &txbuff[k]);
 			k = k + 6;
 			txbuff[k++] = ' ';
 		}
@@ -755,36 +756,38 @@ void send_zG(float zG[7], int16_t moreInfo){
 	//while(DMA1_Stream7->NDTR!= 0);
 	//UART5->DR=0;
 	uint16_t 	i=0, k=1;
-	int16_t  	temp;
+	int32_t 	temp32;
+	int16_t 	temp16;
 	float 		dtemp;//hold data
 
 	txbuff[0] = 10;//start line with LF
 	/* index */
-	temp  = (int16_t)moreInfo;
-	IntToStr6(temp, &txbuff[k]);
+	temp16  = (int16_t)moreInfo;
+	IntToStr6(temp16, &txbuff[k]);
 	k = k + 6;
 	txbuff[k++] = ' ';
 	
 	/* time => [s]*10 */
 	dtemp = zG[0]*10; 
-	temp  = (int16_t)dtemp;
-	IntToStr8(temp, &txbuff[k]);
+	temp32  = (int32_t)dtemp;
+	IntToStr8(temp32, &txbuff[k]);
 	k = k + 8;
 	txbuff[k++] = ' ';
 	
 	/* lat lon => [rad]*10^6 */
 	for (i=1; i<3; i++){
 		dtemp = zG[i]*1000000; 
-		temp  = (int16_t)dtemp;
-		IntToStr8(temp, &txbuff[k]);	
+		temp32  = (int32_t)dtemp;
+		IntToStr8(temp32, &txbuff[k]);	
 		k = k + 8;
 		txbuff[k++] = ' ';
 	}
+	
 	/* height VN VE VD => [m m/s]*10^3 */
 	for (i=3; i<7; i++){
 		dtemp = zG[i]*1000; 
-		temp  = (int16_t)dtemp;
-		IntToStr6(temp, &txbuff[k]);
+		temp16  = (int16_t)dtemp;
+		IntToStr6(temp16, &txbuff[k]);
 		k = k + 6;
 		txbuff[k++] = ' ';
 	}

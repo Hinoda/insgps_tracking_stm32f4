@@ -20,9 +20,9 @@
 #include <stdlib.h>
 
 /* Function Declarations */
-void insgps_v6_0(const float zI[10], const float zG[7], bool gpsflag, float
-                 dt, float g0, float a, float e, float we, const float Q
-                 [144], const float R[36], float PVA[10], float bias[6],
+void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float
+                 dt, float g0, float a, float e, float we, float Q
+                 [144], float R[36], float PVA[10], float bias[6],
                  float Pk_1[225], float xk_1[15]);
 
 #endif
