@@ -7,7 +7,9 @@
 #define brIMU 112500
 #include "stm32f4xx.h"
 #include "misc.h"
-
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 #define UARTprintf(...) {\
 							uint8_t buffer[128];\
 							uint8_t len = sprintf(buffer,__VA_ARGS__);\
@@ -28,9 +30,10 @@ void delay_us(uint16_t period);
 void delay_01ms(uint16_t period);
 //-----------------------------------
 /* Define TIM7 for calculating elapsed time */
-void ElapseDef_001ms(uint16_t period);
-void ElapseGet(int16_t* elapsedTime);
-void ElapseRestart(void);
+void ElapsedDef_001ms(uint16_t period);
+void ElapsedGet(int16_t* elapsedTime);
+void ElapsedRestart(void);
+void sendElapsed(uint16_t elapsedTime);
 void sendMode(uint8_t* myinfo);
 //-----------------------------------
 void reset_adis(void);
@@ -43,8 +46,8 @@ void cmdw_adis(uint16_t data);
  * using UART5, transmit PVA/zG/data results to laptop
  * transmit buffer is txbuff[300]
  */
-void send_zG(float zG[7], int16_t _i);
-void send_PVA(float PVA[10],float zG[7],uint8_t gpsflag);
+void send_zG(float zG[7], int16_t moreInfo);
+void send_PVA(float PVA[10],float zG[7],bool gpsflag);
 
 void send_data(void);
 //-----------------------------------

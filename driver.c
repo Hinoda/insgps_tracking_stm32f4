@@ -1,5 +1,8 @@
 #include "driver.h"
 #include <stdio.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 double  marg[15];
 double  euler[3];
@@ -529,7 +532,7 @@ void delay_01ms(uint16_t period){
   	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, DISABLE);
 }
 
-void ElapseDef_001ms(uint16_t period){
+void ElapsedDef_001ms(uint16_t period){
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
 	TIM7->PSC = 839;		// clk = SystemCoreClock / 4 / (PSC+1) *2 = 10KHz
 	TIM7->ARR = period-1;
@@ -537,54 +540,54 @@ void ElapseDef_001ms(uint16_t period){
 	TIM7->EGR = 1;		/* Generate an update event to reload the Prescaler value immediately */
 }
 
-void ElapseGet(int16_t* elapsedTime){
+void ElapsedGet(int16_t* elapsedTime){
 	*elapsedTime=TIM7->CNT;
 	TIM7->CR1 = 0;		// stop Timer7
 }
 
-void ElapseRestart(void){
+void ElapsedRestart(void){
 	TIM7->SR  = 0;		// clear overflow flag
 	TIM7->CNT = 0;
 	TIM7->CR1 = 1;		// enable Timer7
 }
 void IntToStr5(int16_t u, uint8_t *y){
 	int16_t a;
-     
-   a = u;
-   if (a<0){ 
+	
+	a = u;
+	if (a<0){ 
 		a = -a; 
 		y[0] = '-';
 	}
-   else y[0] = ' ';
-     
-   y[4] = a % 10 + 0x30; 
-   a = a / 10;
-   y[3] = a % 10 + 0x30; 
-   a = a / 10;
-   y[2] = a % 10 + 0x30; 
-   a = a / 10;
-   y[1] = a + 0x30;
+	else y[0] = ' ';
+	
+	y[4] = a % 10 + 0x30; 
+	a = a / 10;
+	y[3] = a % 10 + 0x30; 
+	a = a / 10;
+	y[2] = a % 10 + 0x30; 
+	a = a / 10;
+	y[1] = a + 0x30;
 }
 
 void IntToStr6(int16_t u, uint8_t *y){
 	int16_t a;
      
-   a = u;
-   if (a<0){ 
+	a = u;
+	if (a<0){ 
 		a = -a; 
 		y[0] = '-';
 	}
-   else y[0] = ' ';
-   
-	 y[5] = a % 10 + 0x30; 
-   a = a / 10;	
-   y[4] = a % 10 + 0x30; 
-   a = a / 10;
-   y[3] = a % 10 + 0x30; 
-   a = a / 10;
-   y[2] = a % 10 + 0x30; 
-   a = a / 10;
-   y[1] = a + 0x30;
+	else y[0] = ' ';
+
+	y[5] = a % 10 + 0x30; 
+	a = a / 10;	
+	y[4] = a % 10 + 0x30; 
+	a = a / 10;
+	y[3] = a % 10 + 0x30; 
+	a = a / 10;
+	y[2] = a % 10 + 0x30; 
+	a = a / 10;
+	y[1] = a + 0x30;
 }
 void IntToStr8(int16_t u, uint8_t *y){
 	int16_t a;
@@ -596,19 +599,19 @@ void IntToStr8(int16_t u, uint8_t *y){
 	}
    else y[0] = ' ';
    
-	 y[7] = a % 10 + 0x30; 
-   a = a / 10;	
-   y[6] = a % 10 + 0x30; 
-   a = a / 10;
-   y[5] = a % 10 + 0x30; 
-   a = a / 10;
-   y[4] = a % 10 + 0x30; 
-   a = a / 10;
-	 y[3] = a % 10 + 0x30; 
-   a = a / 10;
-   y[2] = a % 10 + 0x30; 
-   a = a / 10;
-	 y[1] = a + 0x30;
+	y[7] = a % 10 + 0x30; 
+	a = a / 10;	
+	y[6] = a % 10 + 0x30; 
+	a = a / 10;
+	y[5] = a % 10 + 0x30; 
+	a = a / 10;
+	y[4] = a % 10 + 0x30; 
+	a = a / 10;
+	y[3] = a % 10 + 0x30; 
+	a = a / 10;
+	y[2] = a % 10 + 0x30; 
+	a = a / 10;
+	y[1] = a + 0x30;
 	
 }
 
@@ -670,7 +673,8 @@ void send_data(void){
 * lan2: 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000
 *
 */
-void send_PVA(float PVA[10],float zG[7],uint8_t gpsflag){
+void send_PVA(float PVA[10],float zG[7],bool gpsflag){
+	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	uint16_t 	i, k;
 	int16_t  	temp;
 	float 		dtemp;//hold data
@@ -710,9 +714,9 @@ void send_PVA(float PVA[10],float zG[7],uint8_t gpsflag){
 	}
 	txbuff[k++] = 13;//CR 0x0d
 
-	if(gpsflag == 1){
+	if(gpsflag){
 		txbuff[k++] = 10;//LF 0x0a
-		txbuff[k++] = 61;
+		txbuff[k++] = 'G';
 		txbuff[k++] = ' ';
 		/* time => [s]*10 */
 		dtemp = zG[0]*10; 
@@ -737,14 +741,15 @@ void send_PVA(float PVA[10],float zG[7],uint8_t gpsflag){
 			k = k + 6;
 			txbuff[k++] = ' ';
 		}
+		txbuff[k++] = 13;//CR 0x0d
 	}
-	txbuff[k++] = 13;//CR 0x0d
+	k++;
 	DMA_ClearFlag(DMA1_Stream7, DMA_FLAG_TCIF7);
 	DMA1_Stream7->NDTR = k;
 	DMA_Cmd(DMA1_Stream7, ENABLE);
 }
 
-void send_zG(float zG[7], int16_t _i){
+void send_zG(float zG[7], int16_t moreInfo){
 	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	//while(DMA_GetFlagStatus(DMA1_Stream7, DMA_FLAG_TCIF7) == 0);
 	//while(DMA1_Stream7->NDTR!= 0);
@@ -755,7 +760,7 @@ void send_zG(float zG[7], int16_t _i){
 
 	txbuff[0] = 10;//start line with LF
 	/* index */
-	temp  = (int16_t)_i;
+	temp  = (int16_t)moreInfo;
 	IntToStr6(temp, &txbuff[k]);
 	k = k + 6;
 	txbuff[k++] = ' ';
@@ -807,3 +812,22 @@ void sendMode(uint8_t* myinfo){
 	DMA_Cmd(DMA1_Stream7, ENABLE);
 }
 
+void sendElapsed(uint16_t elapsedTime){
+	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
+	uint16_t 	k = 1;
+	int16_t  	temp;
+	
+	txbuff[0] = 10;//start line with LF
+	txbuff[k++] = 42;
+	txbuff[k++] = ' ';
+	temp  = (int16_t)elapsedTime;
+	IntToStr6(temp, &txbuff[k]);
+	k = k + 6;
+	//txbuff[k++] = ' ';
+	
+	txbuff[k++] = 13;
+	//k++;
+	DMA_ClearFlag(DMA1_Stream7, DMA_FLAG_TCIF7);
+	DMA1_Stream7->NDTR = k;
+	DMA_Cmd(DMA1_Stream7, ENABLE);
+}

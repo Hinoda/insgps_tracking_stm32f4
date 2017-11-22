@@ -2,24 +2,24 @@
 //params
 #include "initialize.h"
 #include "genDataGetProcess.h"
-float dt, g0;
-float a, e;				//ban kinh TD va tam sai WGS84
-float we;					//toc do quay TD
-float PVA[10];
-float bias[6];
-float Q[144], R[36];
-float Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
+//float dt, g0;
+//float a, e;
+//float we;
+//float PVA[10];
+//float bias[6];
+//float Q[144], R[36];
+//float Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
 float xPI_180 = 0.017453292519943;
 float x180_PI = 57.295779513082323;
 
-void initialize(void){
+void initialize(float* dt, float* g0, float* a, float* e, float* we, float PVA[], float bias[], float Q[], float R[], float Pk_1[], float xk_1[]){
 	/*const*/
 
 //	dt = 0.1/5;
-	g0 = 9.80665;
-	a = 6378137;
-	e = 0.08181919;
-	we = 7.2921155*pow(10,-5);
+	*g0 = 9.80665;
+	*a = 6378137;
+	*e = 0.08181919;
+	*we = 7.2921155*pow(10,-5);
 	int j;
 	/***********************************************************/
 	/*initialize PVA_,params,bias_*/

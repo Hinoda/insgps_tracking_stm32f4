@@ -39,11 +39,11 @@ void AssignGPSComma(uint8_t commaIndex[])
 uint8_t CheckGPSflag(uint8_t commaIndex[])
 {
 	ToInt(&numofsat,xsbuff+commaIndex[15]+1,commaIndex[16]-commaIndex[15]-1);
-	if (numofsat>=4) return 1;
+	if ((numofsat>=4)&&(rxflag == 1)) return 1;
 	else return 0;
 }
 
-void GPSDataProcess(uint8_t started, uint8_t commaIndex[])
+void GPSDataProcess(bool started, uint8_t commaIndex[])
 {
 	memset(zG,0,7);
 	//---------SPEED------------

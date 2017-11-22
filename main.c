@@ -4,6 +4,9 @@
 #include "stm32f4xx.h"
 #include "misc.h"
 #include "system_timetick.h"
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #include "driver.h"
 #include "insgps_v6_0.h"
@@ -19,15 +22,25 @@
 #include "Cbn_31_terminate.h"
 #include "Cbn_31_initialize.h"
 
+
+
+
 /********** Local (static) variable definition ********************************/
 
 static boolean_T OverrunFlag = 0;
-uint8_t gpsflag = 0x00;
-uint8_t started = 0x00;
+bool gpsAvail = false;
+bool firstTime = false;
 uint16_t ID[3];
 uint16_t i = 0;
 uint8_t commaIndex[23];
 uint16_t timesRun = 0;
+float dt, g0;
+float a, e;
+float we;
+float PVA[10];
+float bias[6];
+float Q[144], R[36];
+float Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
 /********** Local function definition section *********************************/
 
 void rt_OneStep(void)
@@ -61,87 +74,67 @@ int main(void)
 {
 	SystemCoreClockUpdate();
 	/* Enable SysTick at 5ms interrupt */
-	SysTick_Config(SystemCoreClock/100);//10ms
-	delay_01ms(20000);
+	//SysTick_Config(SystemCoreClock/100);//10ms
+	SysTick_Config(SystemCoreClock/50);//20ms
+	delay_01ms(50000);
 	
 	init_board();
-	ElapseDef_001ms(10000);
-
+	ElapsedDef_001ms(10000);
 	//reset_adis();
 	enable_gps();
 	IMU_Quest_initialize();
-	while(1){
-		if(tick_flag){
+	while(1)
+	{
+		if(tick_flag)
+		{
 			tick_flag = 0;
+					
+			//ElapsedRestart();
 			/* Calcutalte zI+zG data */
 			rt_OneStep();				/* IMU_Quest: Get IMU data. Find Euler angles */
 			INSDataProcess();			/* Process & Store new INS data */
-			ElapseGet(&elapsedTime1);
-			ElapseRestart();
+
 			receive_data();				/* Get GPS data */
-			timesRun++;
-			if(rxflag == 1){
+			if(rxflag == 1)
+            {
+                AssignGPSComma(commaIndex);
+				//gpsAvail = rxflag&(CheckGPSflag(commaIndex));
+				gpsAvail = CheckGPSflag(commaIndex);
+				GPSDataProcess(firstTime, commaIndex);
 				rxflag = 0;
-				i++;
-				//if( i == 10)
-				//{
-				// (void)i;
-				//}
-				AssignGPSComma(commaIndex);
-				gpsflag = CheckGPSflag(commaIndex);
-				if(gpsflag == 1)
-				{
-					gpsflag = 0;
-					GPSDataProcess(started, commaIndex);		/* Process & Store new GPS data */
-					//sendMode("RECEIVED");
-					//send_zG(zG,timesRun);
-					send_zG(zG,elapsedTime1);
-				}
-				else
-				{
-					sendMode("FAIL");
-					//send_zG(zG,timesRun);
-					//send_zG(zG,elapsedTime1);
-										
-					//static uint8_t firstTime = 0;
-					//if(firstTime == 0)
-					//{
-					//	firstTime = 1;
-					//	delay_01ms(65000);
-					//}
-				}
-			}
+            }
 			else
 			{
-				sendMode("NO");
-				//send_zG(zG,timesRun);
-				//send_zG(zG,elapsedTime1);
+				gpsAvail = false;
 			}
-			
-			//send_zG(zG,1);
-			//delay_01ms(5);
-			//sendMode(elapsedTime1);
-//			else
-//				CheckGPSflag(&gpsflag);			
-//			if (tick_count>=50000){
-//				if (started){
-//					/* Mechanize and EKF */
-//			dt = elapsedTime1;
-//					insgps_v6_0(zI, zG, gpsflag, dt, g0, a, e, we, 
-//											Q, R, PVA, bias, Pk_1, xk_1);
-//					send_PVA(PVA,zG,gpsflag);				/* Transmit PVA to UART5 */
-//				}
-//				else{
-//					if (gpsflag == 1){
-//						initialize();					/* Init const params (a,e,P0,Q0)*/
-//						started = 1;
-//					}
-//				}
-//			}
-
-			for (uint8_t i=0;i<7;i++)	zG[i]=0;
-			for (uint8_t i=0;i<10;i++)	zI[i]=0;
-			
+            ElapsedGet(&elapsedTime1);
+			ElapsedRestart();
+            if (!firstTime)
+            {
+                if (gpsAvail)
+                {
+                    initialize(&dt, &g0, &a, &e, &we, PVA, bias, Q, R, Pk_1, xk_1);
+                    firstTime = true;
+                    gpsAvail = false;
+                    delay_01ms(100);
+                    sendMode("YAY!!!\r\nCube is starting now.........");
+                }
+                else
+                {
+                    sendMode("Trying to start...");
+                }
+            }
+			else //second third ...
+            {
+                dt = elapsedTime1*pow(10,-5);
+				//dt = 0.01;
+				insgps_v6_0(zI, zG, gpsAvail, dt, g0, a, e, we, Q, R, PVA, bias, Pk_1, xk_1);
+                sendMode("Cube is sending PVA. Please check your save mode!");
+				send_PVA(PVA,zG,gpsAvail);					/* Transmit PVA to UART5 */	
+				gpsAvail = false;
+            }
+			memset(zI,0,10);
+			memset(zG,0,7);
 		}
 	}
 }
