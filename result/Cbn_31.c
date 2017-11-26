@@ -20,7 +20,7 @@
  *                float Cbn[9]
  * Return Type  : void
  */
-void Cbn_31(const float euler[3], float Cbn[9])
+void Cbn_31(float euler[3], float Cbn[9])
 {
   /* Ci1 */
   /* Ci2 */

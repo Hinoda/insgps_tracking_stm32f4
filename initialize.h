@@ -15,9 +15,9 @@
 extern float xPI_180;
 extern float x180_PI;	
 
-//void initialize(float *dt,\
-//				float *g0, float *a, float *e, float *we, float Q[144], float R[36],\
-//				float PVA[10], float bias[6], float Pk_1[225], float xk_1[15]);
 void initialize(float *dt,\
-				float *g0, float *a, float *e, float *we, float* Q, float* R,\
-				float* PVA, float* bias, float* Pk_1, float* xk_1);
+				float *g0, float *a, float *e, float *we, float Q[144], float R[36],\
+				float PVA[10], float bias[6], float Pk_1[225], float xk_1[15]);
+//void initialize(float *dt,\
+//				float *g0, float *a, float *e, float *we, float* Q, float* R,\
+//				float* PVA, float* bias, float* Pk_1, float* xk_1);

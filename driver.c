@@ -679,7 +679,7 @@ void send_data(void)
 * lan2: 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000
 *
 */
-void send_PVA(float* PVA, float* zG, bool gpsflag){
+void send_PVA(float PVA[10], float zG[7], bool gpsflag){
 	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	uint16_t 	i, k;
 	int32_t 	temp32;
@@ -755,7 +755,7 @@ void send_PVA(float* PVA, float* zG, bool gpsflag){
 	DMA_Cmd(DMA1_Stream7, ENABLE);
 }
 
-void send_zG(float* zG, int16_t moreInfo){
+void send_zG(float zG[7], int16_t moreInfo){
 	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	//while(DMA_GetFlagStatus(DMA1_Stream7, DMA_FLAG_TCIF7) == 0);
 	//while(DMA1_Stream7->NDTR!= 0);
@@ -802,7 +802,7 @@ void send_zG(float* zG, int16_t moreInfo){
 	DMA1_Stream7->NDTR = k;
 	DMA_Cmd(DMA1_Stream7, ENABLE);
 }
-void sendMode(char* myinfo){
+void sendMode(uint8_t* myinfo){
 	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	//while(DMA_GetFlagStatus(DMA1_Stream7, DMA_FLAG_TCIF7) == 0);
 	//while(DMA1_Stream7->NDTR!= 0);
