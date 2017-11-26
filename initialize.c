@@ -12,8 +12,13 @@
 float xPI_180 = 0.017453292519943;
 float x180_PI = 57.295779513082323;
 
-void initialize(float* dt, float* g0, float* a, float* e, float* we, float PVA[], float bias[], float Q[], float R[], float Pk_1[], float xk_1[]){
-	/*const*/
+//void initialize(float *dt,\
+//				float *g0, float *a, float *e, float *we, float Q[144], float R[36],\
+//				float PVA[10], float bias[6], float Pk_1[225], float xk_1[15])
+void initialize(float *dt,\
+				float *g0, float *a, float *e, float *we, float* Q, float* R,\
+				float* PVA, float* bias, float* Pk_1, float* xk_1)
+{
 
 //	dt = 0.1/5;
 	*g0 = 9.80665;
@@ -55,13 +60,13 @@ void initialize(float* dt, float* g0, float* a, float* e, float* we, float PVA[]
 	sgmPk_1[7] = 1e1*xPI_180;
 	sgmPk_1[8] = 1e2*xPI_180;
 	//sgmPba_[3]					
-	sgmPk_1[9] = 1e0;
-	sgmPk_1[10] = 1e0;
-	sgmPk_1[11] = 1e0;
+	sgmPk_1[9] = 1e1;
+	sgmPk_1[10] = 1e1;
+	sgmPk_1[11] = 1e1;
 	//sgmPbg_[3]
-	sgmPk_1[12] = 2e-1*xPI_180;
-	sgmPk_1[13] = 2e-1*xPI_180;
-	sgmPk_1[14] = 2e-1*xPI_180;
+	sgmPk_1[12] = 1e1*xPI_180;
+	sgmPk_1[13] = 1e1*xPI_180;
+	sgmPk_1[14] = 1e1*xPI_180;
 	for (j = 0; j < 225; j++) {
 		Pk_1[j] = 0;
 	}

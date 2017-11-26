@@ -38,10 +38,12 @@
  *                float xk_1[15]
  * Return Type  : void
  */
-void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float
-                 dt, float g0, float a, float e, float we, float Q
-                 [144], float R[36], float PVA[10], float bias[6],
-                 float Pk_1[225], float xk_1[15])
+//void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
+//					float g0, float a, float e, float we, float Q[144], float R[36],\
+//					float PVA[10], float bias[6], float Pk_1[225], float xk_1[15])
+void insgps_v6_0(float* zI, float* zG, bool gpsflag, float dt,\
+					float g0, float a, float e, float we, float* Q, float* R,\
+					float* PVA, float* bias, float* Pk_1, float* xk_1)
 {
   float vn_[3];
   float b_PVA[3];

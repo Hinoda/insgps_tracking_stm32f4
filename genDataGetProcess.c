@@ -43,7 +43,7 @@ bool CheckGPSflag(uint8_t commaIndex[])
 	else return false;
 }
 
-void GPSDataProcess(bool started, uint8_t commaIndex[])
+void GPSDataProcess(bool gpsflag, uint8_t commaIndex[])
 {
 	for (uint8_t i=0;i<7;i++)	zG[i]=0;
 	
@@ -66,7 +66,7 @@ void GPSDataProcess(bool started, uint8_t commaIndex[])
 	speed=speed*0.51444444;
 	
 	//HEAD
-	if (started){
+	if (gpsflag){
 		ToFloat(&head,xsbuff+commaIndex[0]+1,commaIndex[1]-commaIndex[0]-1);
 		head=head*xPI_180;
 		zG[6]=0;

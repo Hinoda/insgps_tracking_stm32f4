@@ -33,8 +33,6 @@ void delay_01ms(uint16_t period);
 void ElapsedDef_001ms(uint16_t period);
 void ElapsedGet(int16_t* elapsedTime);
 void ElapsedRestart(void);
-void sendElapsed(uint16_t elapsedTime);
-void sendMode(uint8_t* myinfo);
 //-----------------------------------
 void reset_adis(void);
 void read_adis(void);
@@ -46,9 +44,10 @@ void cmdw_adis(uint16_t data);
  * using UART5, transmit PVA/zG/data results to laptop
  * transmit buffer is txbuff[300]
  */
-void send_zG(float zG[7], int16_t moreInfo);
-void send_PVA(float PVA[10],float zG[7],bool gpsflag);
-
+void send_zG(float* zG, int16_t moreInfo);
+void send_PVA(float* PVA ,float* zG ,bool gpsflag);
+void sendElapsed(uint16_t elapsedTime);
+void sendMode(char* myinfo);
 void send_data(void);
 //-----------------------------------
 /* receive GPS/RTK, store in xsbuff

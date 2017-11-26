@@ -100,7 +100,7 @@ int main(void)
                 AssignGPSComma(g_commaIndex);
 				//gpsAvail = rxflag&(CheckGPSflag(commaIndex));
 				gpsAvail = CheckGPSflag(g_commaIndex);
-				GPSDataProcess(firstTime, g_commaIndex);
+				GPSDataProcess(gpsAvail, g_commaIndex);
 				rxflag = 0;
             }
 			else
@@ -113,7 +113,7 @@ int main(void)
             {
                 if (gpsAvail)
                 {
-                    initialize(&g_dt, &g_g0, &g_a, &g_e, &g_we, g_PVA, g_bias, g_Q, g_R, g_Pk_1, g_xk_1);
+                    initialize(&g_dt, &g_g0, &g_a, &g_e, &g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
                     firstTime = true;
                     gpsAvail = false;
                     delay_01ms(100);
@@ -129,12 +129,13 @@ int main(void)
                 g_dt = elapsedTime1*pow(10,-5);
 				//dt = 0.01;
 				insgps_v6_0(zI, zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
-                sendMode("Cube is sending PVA. Please check your save mode!");
+                //sendMode("Sending PVA ==>");
 				send_PVA(g_PVA,zG,gpsAvail);					/* Transmit PVA to UART5 */	
 				gpsAvail = false;
             }
 			for (uint8_t i=0;i<7;i++)	zG[i]=0;
 			for (uint8_t i=0;i<10;i++)	zI[i]=0;
+			i=0;
 		}
 	}
 }
