@@ -19,7 +19,7 @@
  *                const float B[36]
  * Return Type  : void
  */
-void b_mrdivide(float A[90], const float B[36])
+void b_mrdivide(float A[90], float B[36])
 {
   float b_A[36];
   signed char ipiv[6];
@@ -139,7 +139,7 @@ void b_mrdivide(float A[90], const float B[36])
  *                float y[30]
  * Return Type  : void
  */
-void mrdivide(const float A[30], const float B[4], float y[30])
+void mrdivide(float A[30], float B[4], float y[30])
 {
   int r1;
   int r2;

@@ -17,7 +17,7 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void skew_mat3(const float A[3], float ret[9]);
+void skew_mat3(float A[3], float ret[9]);
 
 #endif
 

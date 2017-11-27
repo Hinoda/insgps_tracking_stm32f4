@@ -18,7 +18,7 @@
  *                float ret[9]
  * Return Type  : void
  */
-void skew_mat3(const float A[3], float ret[9])
+void skew_mat3(float A[3], float ret[9])
 {
   ret[0] = 0.0;
   ret[3] = -A[2];

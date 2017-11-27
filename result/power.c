@@ -19,7 +19,7 @@
  *                float y[3]
  * Return Type  : void
  */
-void b_power(const float a[3], float y[3])
+void b_power(float a[3], float y[3])
 {
   int k;
   for (k = 0; k < 3; k++) {
@@ -32,7 +32,7 @@ void b_power(const float a[3], float y[3])
  *                float y[36]
  * Return Type  : void
  */
-void power(const float a[36], float y[36])
+void power(float a[36], float y[36])
 {
   int k;
   for (k = 0; k < 36; k++) {

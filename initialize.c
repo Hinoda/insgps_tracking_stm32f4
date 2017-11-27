@@ -48,25 +48,25 @@ void initialize(float *dt,\
 	// P: Pk_1 = diag([sgmPr_; sgmPv_; sgmPe_; sgmPba_; sgmPbg_};
 	float sgmPk_1[15];
 	//sgmPr_[3]
-	sgmPk_1[0] = 1e2*xPI_180;
-	sgmPk_1[1] = 1e2*xPI_180;
-	sgmPk_1[2] = 1e1;
+	sgmPk_1[0] = 5e0*xPI_180;
+	sgmPk_1[1] = 5e0*xPI_180;
+	sgmPk_1[2] = 5e0;
 	//sgmPv_[3]
 	sgmPk_1[3] = 5e0;
 	sgmPk_1[4] = 5e0;
 	sgmPk_1[5] = 2e0;
 	//sgmPe_[3]
-	sgmPk_1[6] = 1e1*xPI_180;
-	sgmPk_1[7] = 1e1*xPI_180;
-	sgmPk_1[8] = 1e2*xPI_180;
+	sgmPk_1[6] = 5e0*xPI_180;
+	sgmPk_1[7] = 5e0*xPI_180;
+	sgmPk_1[8] = 5e0*xPI_180;
 	//sgmPba_[3]					
-	sgmPk_1[9] = 1e1;
-	sgmPk_1[10] = 1e1;
-	sgmPk_1[11] = 1e1;
+	sgmPk_1[9] = 5e0;
+	sgmPk_1[10] = 5e0;
+	sgmPk_1[11] = 5e0;
 	//sgmPbg_[3]
-	sgmPk_1[12] = 1e1*xPI_180;
-	sgmPk_1[13] = 1e1*xPI_180;
-	sgmPk_1[14] = 1e1*xPI_180;
+	sgmPk_1[12] = 3e0*xPI_180;
+	sgmPk_1[13] = 3e0*xPI_180;
+	sgmPk_1[14] = 3e0*xPI_180;
 	for (j = 0; j < 225; j++) {
 		Pk_1[j] = 0;
 	}
@@ -84,21 +84,21 @@ void initialize(float *dt,\
 	//Q: do bat dinh cua he thong
 	float sgmQ[12];
 	//sgmQa_[3]
-	sgmQ[0] = 5e0;
-	sgmQ[1] = 5e0;
-	sgmQ[2] = 1e0;
+	sgmQ[0] = 5e-1;
+	sgmQ[1] = 5e-1;
+	sgmQ[2] = 5e-1;
 	//sgmQg_[3]
-	sgmQ[3] = 5e0*xPI_180;
-	sgmQ[4] = 5e0*xPI_180;
-	sgmQ[5] = 5e0*xPI_180;
+	sgmQ[3] = 5e-1*xPI_180;
+	sgmQ[4] = 5e-1*xPI_180;
+	sgmQ[5] = 5e-1*xPI_180;
 	//sgmQba_[3]
-	sgmQ[6] = 1e-1;
-	sgmQ[7] = 1e-1;
-	sgmQ[8] = 1e-1;
+	sgmQ[6] = 1e-2;
+	sgmQ[7] = 1e-2;
+	sgmQ[8] = 1e-2;
 	//sgmQbg_[3]
-	sgmQ[9] = 7e-2*xPI_180;
-	sgmQ[10] = 7e-2*xPI_180;
-	sgmQ[11] = 7e-2*xPI_180;					
+	sgmQ[9] = 1e-2*xPI_180;
+	sgmQ[10] = 1e-2*xPI_180;
+	sgmQ[11] = 1e-2*xPI_180;					
 	for (j = 0; j < 144; j++) {
 		Q[j] = 0;
 	}
@@ -111,7 +111,7 @@ void initialize(float *dt,\
 	//RP
 	sgmR[0] = 1e-6;
 	sgmR[1] = 1e-6;
-	sgmR[2] = 1e-4;
+	sgmR[2] = 1e-3;
 	//RV
 	sgmR[3] = 1e-2;
 	sgmR[4] = 1e-2;

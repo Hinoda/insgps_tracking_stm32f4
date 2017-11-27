@@ -1,6 +1,7 @@
 #include "genDataGetProcess.h"
 #include "initialize.h"
 #include "driver.h"
+#include <math.h>
 /**
  * @params   IN: gpsbuff[300]
  *               euler[3]=[roll pitch yaw]
@@ -39,44 +40,50 @@ void AssignGPSComma(uint8_t commaIndex[])
 bool CheckGPSflag(uint8_t commaIndex[])
 {
 	ToInt(&numofsat,xsbuff+commaIndex[15]+1,commaIndex[16]-commaIndex[15]-1);
-	if ((numofsat>=4)&&(rxflag == 1)) return true;
+	if ((numofsat>=4)){
+		numofsat=0;
+		return true;
+	}
 	else return false;
 }
 
 void GPSDataProcess(bool gpsflag, uint8_t commaIndex[])
 {
 	for (uint8_t i=0;i<7;i++)	zG[i]=0;
-	
-	//TIME
-	ToFloat(&zG[0],xsbuff+commaIndex[9]+1,commaIndex[10]-commaIndex[9]-1);
-	gpstime=zG[0];
-	
-	//HEIGHT
-	ToFloat(&zG[3],xsbuff+commaIndex[17]+1,commaIndex[18]-commaIndex[17]-1);
-	height_=zG[3];
-	
-	//LATLON
-	posToGoog(&zG[1],xsbuff+commaIndex[10]+1,commaIndex[11]-commaIndex[10]-1,xsbuff[commaIndex[11]+1]);
-	posToGoog(&zG[2],xsbuff+commaIndex[12]+1,commaIndex[13]-commaIndex[12]-1,xsbuff[commaIndex[13]+1]);
-	zG[1]=zG[1]*xPI_180;
-	zG[2]=zG[2]*xPI_180;
-	
-	//SPEED
-	ToFloat(&speed,xsbuff+commaIndex[4]+1,commaIndex[5]-commaIndex[4]-1);
-	speed=speed*0.51444444;
-	
-	//HEAD
 	if (gpsflag){
-		ToFloat(&head,xsbuff+commaIndex[0]+1,commaIndex[1]-commaIndex[0]-1);
-		head=head*xPI_180;
-		zG[6]=0;
+		//TIME
+		ToFloat(&zG[0],xsbuff+commaIndex[9]+1,commaIndex[10]-commaIndex[9]-1);
+		gpstime=zG[0];
+		
+		//HEIGHT
+		ToFloat(&zG[3],xsbuff+commaIndex[17]+1,commaIndex[18]-commaIndex[17]-1);
+		height_=zG[3];
+		
+		//LATLON
+		posToGoog(&zG[1],xsbuff+commaIndex[10]+1,commaIndex[11]-commaIndex[10]-1,xsbuff[commaIndex[11]+1]);
+		posToGoog(&zG[2],xsbuff+commaIndex[12]+1,commaIndex[13]-commaIndex[12]-1,xsbuff[commaIndex[13]+1]);
+		zG[1]=zG[1]*xPI_180;
+		zG[2]=zG[2]*xPI_180;
+		
+		//SPEED
+		ToFloat(&speed,xsbuff+commaIndex[4]+1,commaIndex[5]-commaIndex[4]-1);
+		speed=speed*0.51444444;
+		
+		//HEAD
+		if ((commaIndex[1]-commaIndex[0]-1)>0){
+			ToFloat(&head,xsbuff+commaIndex[0]+1,commaIndex[1]-commaIndex[0]-1);
+			head=head*xPI_180;
+			zG[6]=0;
+		}
+		else{
+			head=euler[2]*0.1*xPI_180;
+			zG[6]=(height_-zG[3])/(zG[0]-gpstime);
+		}
+		zG[4]=speed*cos(head);
+		zG[5]=speed*sin(head);
+		speed=0;
+		head=0;
 	}
-	else{
-		head=euler[2]*0.1*xPI_180;
-		zG[6]=(height_-zG[3])/(zG[0]-gpstime);
-	}
-	zG[4]=speed*cos(head);
-	zG[5]=speed*sin(head);
 }
 
 void INSDataProcess(void)

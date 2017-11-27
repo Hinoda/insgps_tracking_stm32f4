@@ -88,25 +88,26 @@ int main(void)
 		if(tick_flag)
 		{
 			tick_flag = 0;
-					
 			//ElapsedRestart();
 			/* Calcutalte zI+zG data */
 			rt_OneStep();				/* IMU_Quest: Get IMU data. Find Euler angles */
 			INSDataProcess();			/* Process & Store new INS data */
 
 			receive_data();				/* Get GPS data */
-			if(rxflag == 1)
+			if((rxflag == 1)&&(rxlen>100))
             {
                 AssignGPSComma(g_commaIndex);
 				//gpsAvail = rxflag&(CheckGPSflag(commaIndex));
 				gpsAvail = CheckGPSflag(g_commaIndex);
 				GPSDataProcess(gpsAvail, g_commaIndex);
 				rxflag = 0;
+				rxlen = 0;
             }
 			else
 			{
 				gpsAvail = false;
 			}
+			
             ElapsedGet(&elapsedTime1);
 			ElapsedRestart();
             if (!firstTime)
@@ -114,28 +115,34 @@ int main(void)
                 if (gpsAvail)
                 {
                     initialize(&g_dt, &g_g0, &g_a, &g_e, &g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
+					g_dt = elapsedTime1*pow(10,-5);
+					//g_dt = 0.02;
+					zG[6]=0.1;
+					insgps_v6_0(zI, zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
                     firstTime = true;
                     gpsAvail = false;
                     delay_01ms(100);
-                    sendMode("YAY!!!\r\nCube is starting now.........");
+                    //sendMode("YAY!!!\r\nCube is starting now.........");
                 }
                 else
                 {
-                    sendMode("Trying to start...");
+                    //sendMode("Trying to start...");
                 }
             }
 			else //second third ...
             {
                 g_dt = elapsedTime1*pow(10,-5);
-				//dt = 0.01;
+				//g_dt = 0.02;
 				insgps_v6_0(zI, zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
-                //sendMode("Sending PVA ==>");
-				send_PVA(g_PVA,zG,gpsAvail);					/* Transmit PVA to UART5 */	
 				gpsAvail = false;
             }
+
+            //sendMode("Sending PVA ==>");
+            send_PVA(g_PVA,zG,gpsAvail);					/* Transmit PVA to UART5 */	
 			for (uint8_t i=0;i<7;i++)	zG[i]=0;
 			for (uint8_t i=0;i<10;i++)	zI[i]=0;
 			i=0;
+			//ElapsedGet(&elapsedTime1);
 		}
 	}
 }

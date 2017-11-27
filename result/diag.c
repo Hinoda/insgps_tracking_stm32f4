@@ -19,7 +19,7 @@
  *                float d[4]
  * Return Type  : void
  */
-void b_diag(const float v[2], float d[4])
+void b_diag(float v[2], float d[4])
 {
   int j;
   for (j = 0; j < 4; j++) {
@@ -36,7 +36,7 @@ void b_diag(const float v[2], float d[4])
  *                float d[36]
  * Return Type  : void
  */
-void diag(const float v[6], float d[36])
+void diag(float v[6], float d[36])
 {
   int j;
   memset(&d[0], 0, 36U * sizeof(float));
