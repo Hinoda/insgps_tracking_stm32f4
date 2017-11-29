@@ -38,12 +38,12 @@
  *                float xk_1[15]
  * Return Type  : void
  */
-void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
-					float g0, float a, float e, float we, float Q[144], float R[36],\
-					float PVA[10], float bias[6], float Pk_1[225], float xk_1[15])
-//void insgps_v6_0(float* zI, float* zG, bool gpsflag, float dt,\
-//					float g0, float a, float e, float we, float* Q, float* R,\
-//					float* PVA, float* bias, float* Pk_1, float* xk_1)
+//void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
+//					float g0, float a, float e, float we, float Q[144], float R[36],\
+//					float PVA[10], float bias[6], float Pk_1[225], float xk_1[15])
+void insgps_v6_0(float* zI, float* zG, bool gpsflag, float dt,\
+					float g0, float a, float e, float we, float* Q, float* R,\
+					float* PVA, float* bias, float* Pk_1, float* xk_1)
 {
   float vn_[3];
   float b_PVA[3];
@@ -158,37 +158,37 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
   /* VE_  = PVA(6); */
   /* VD_  = PVA(7); */
   /* } */
-  vn_[0] = PVA[4];
-  vn_[1] = PVA[5];
-  vn_[2] = PVA[6];
+  vn_[0] = *(PVA+4);
+  vn_[1] = *(PVA+5);
+  vn_[2] = *(PVA+6);
 
   /*  rad */
-  b_PVA[0] = PVA[7];
-  b_PVA[1] = PVA[8];
-  b_PVA[2] = PVA[9];
+  b_PVA[0] = *(PVA+7);
+  b_PVA[1] = *(PVA+8);
+  b_PVA[2] = *(PVA+9);
   Cbn_31(b_PVA, Cbn_);
 
   /*  Cbn_=normC(Cbn_); */
   /* params */
-  x = sin(PVA[1]);
+  x = sin(*(PVA+1));
   N_ = a / sqrt(1 - e * e * (x * x));
-  x = sin(PVA[1]);
+  //x = sin(PVA[1]);
   M_ = a * (1 - e * e) / pow(1 - e * e * (x * x), 1.5);
   RMN = sqrt(N_ * M_);
-  x = RMN / (RMN + PVA[3]);
+  x = RMN / (RMN + *(PVA+3));
   g = g0 * (x * x);
 
   /* gn */
-  wen_n[0] = PVA[5] / (N_ + PVA[3]);
-  wen_n[1] = -PVA[4] / (M_ + PVA[3]);
-  wen_n[2] = -PVA[5] * tan(PVA[1]) / (N_ + PVA[3]);
-  wie_n[0] = we * cos(PVA[1]);
+  wen_n[0] = *(PVA+5) / (N_ + *(PVA+3));
+  wen_n[1] = -*(PVA+4) / (M_ + *(PVA+3));
+  wen_n[2] = -*(PVA+5) * tan(*(PVA+1)) / (N_ + *(PVA+3));
+  wie_n[0] = we * cos(*(PVA+1));
   wie_n[1] = 0;
-  wie_n[2] = -we * sin(PVA[1]);
+  wie_n[2] = -we * sin(*(PVA+1));
   eye(b);
-  b_zI[0] = zI[4] - bias[3];
-  b_zI[1] = zI[5] - bias[4];
-  b_zI[2] = zI[6] - bias[5];
+  b_zI[0] = *(zI+4) - *(bias+3);
+  b_zI[1] = *(zI+5) - *(bias+4);
+  b_zI[2] = *(zI+6) - *(bias+5);
   skew_mat3(b_zI, dv4);
   for (i1 = 0; i1 < 9; i1++) {
     b[i1] += dv4[i1] * dt;
@@ -223,9 +223,9 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
     }
   }
 
-  c_zI[0] = zI[7] - bias[0];
-  c_zI[1] = zI[8] - bias[1];
-  c_zI[2] = zI[9] - bias[2];
+  c_zI[0] = *(zI+7) - *(bias);
+  c_zI[1] = *(zI+8) - *(bias+1);
+  c_zI[2] = *(zI+9) - *(bias+2);
 
   /* ** vn */
   skew_mat3(wen_n, dv4);
@@ -252,15 +252,15 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
   }
 
   /* % Position */
-  h = PVA[3] - dt / 2 * (PVA[6] + vn[2]);
-  lat = PVA[1] + dt / 2 * (PVA[4] / (M_ + PVA[3]) + vn[0] / (M_ + h));
+  h = *(PVA+3) - dt / 2 * (*(PVA+6) + vn[2]);
+  lat = *(PVA+1) + dt / 2 * (*(PVA+4) / (M_ + *(PVA+3)) + vn[0] / (M_ + h));
   sin_lat = sin(lat);
   cos_lat = cos(lat);
   tan_lat = sin_lat / cos_lat;
   N = a / sqrt(1 - e * e * (sin_lat * sin_lat));
   M = a * (1 - e * e) / pow(1 - e * e * (sin_lat * sin_lat), 1.5);
   invNplushcos_lat2 = 1 / ((N + h) * (cos_lat * cos_lat));
-  lon = PVA[2] + dt / 2 * (PVA[5] / ((N_ + PVA[3]) * cos(PVA[1])) + vn[1] /
+  lon = *(PVA+2) + dt / 2 * (*(PVA+5) / ((N_ + *(PVA+3)) * cos(*(PVA+1))) + vn[1] /
     ((N + h) * cos_lat));
 
   /* ** rn */
@@ -431,8 +431,8 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
       c_PHIk_hat[i1 + 15 * i2] = 0;
       c_G[i1 + 15 * i2] = 0;
       for (i3 = 0; i3 < 12; i3++) {
-        c_PHIk_hat[i1 + 15 * i2] += b_PHIk_hat[i1 + 15 * i3] * Q[i3 + 12 * i2];
-        c_G[i1 + 15 * i2] += b_G[i1 + 15 * i3] * Q[i3 + 12 * i2];
+        c_PHIk_hat[i1 + 15 * i2] += b_PHIk_hat[i1 + 15 * i3] * (*(Q + i3 + 12 * i2));
+        c_G[i1 + 15 * i2] += b_G[i1 + 15 * i3] * (*(Q + i3 + 12 * i2));
       }
     }
 
@@ -501,7 +501,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
       for (i2 = 0; i2 < 6; i2++) {
         K[i1 + 15 * i2] = 0;
         for (i3 = 0; i3 < 15; i3++) {
-          K[i1 + 15 * i2] += Pk_1[i1 + 15 * i3] * c_Hk[i2 + 6 * i3];
+          K[i1 + 15 * i2] += (*(Pk_1 + i1 + 15 * i3)) * c_Hk[i2 + 6 * i3];
         }
       }
     }
@@ -510,7 +510,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
       for (i2 = 0; i2 < 15; i2++) {
         d_Hk[i1 + 6 * i2] = 0;
         for (i3 = 0; i3 < 15; i3++) {
-          d_Hk[i1 + 6 * i2] += c_Hk[i1 + 6 * i3] * Pk_1[i3 + 15 * i2];
+          d_Hk[i1 + 6 * i2] += c_Hk[i1 + 6 * i3] * (*(Pk_1 + i3 + 15 * i2));
         }
       }
 
@@ -522,7 +522,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
 
         b_R[i1 + 6 * i2] = 0;
         for (i3 = 0; i3 < 6; i3++) {
-          b_R[i1 + 6 * i2] += R[i1 + 6 * i3] * B[i3 + 6 * i2];
+          b_R[i1 + 6 * i2] += (*(R + i1 + 6 * i3)) * B[i3 + 6 * i2];
         }
       }
     }
@@ -536,12 +536,12 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
     b_mrdivide(K, B);
 
     /* 15x15*15x6*(6x15*15x15*15x6+6*6)^-1 */
-    b_lat[0] = lat - zG[1];
-    b_lat[1] = lon - zG[2];
-    b_lat[2] = h - zG[3];
-    b_lat[3] = vn[0] - zG[4];
-    b_lat[4] = vn[1] - zG[5];
-    b_lat[5] = vn[2] - zG[6];
+    b_lat[0] = lat - *(zG+1);
+    b_lat[1] = lon - *(zG+2);
+    b_lat[2] = h - *(zG+3);
+    b_lat[3] = vn[0] - *(zG+4);
+    b_lat[4] = vn[1] - *(zG+5);
+    b_lat[5] = vn[2] - *(zG+6);
     for (i1 = 0; i1 < 6; i1++) {
       b_M[i1] = 0;
       for (i2 = 0; i2 < 6; i2++) {
@@ -550,7 +550,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
 
       h_Hk[i1] = 0;
       for (i2 = 0; i2 < 15; i2++) {
-        h_Hk[i1] += c_Hk[i1 + 6 * i2] * xk_1[i2];
+        h_Hk[i1] += c_Hk[i1 + 6 * i2] * (*(xk_1 + i2));
       }
 
       b_Hksub[i1] = b_M[i1] - h_Hk[i1];
@@ -563,7 +563,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
         x += K[i1 + 15 * i2] * b_Hksub[i2];
       }
 
-      xk_1[i1] += x;
+      (*(xk_1 + i1)) += x;
       for (i2 = 0; i2 < 15; i2++) {
         x = 0;
         for (i3 = 0; i3 < 6; i3++) {
@@ -576,23 +576,23 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
       for (i2 = 0; i2 < 15; i2++) {
         m_a[i1 + 15 * i2] = 0;
         for (i3 = 0; i3 < 15; i3++) {
-          m_a[i1 + 15 * i2] += n_a[i1 + 15 * i3] * Pk_1[i3 + 15 * i2];
+          m_a[i1 + 15 * i2] += n_a[i1 + 15 * i3] * (*(Pk_1 + i3 + 15 * i2));
         }
       }
     }
 
     for (i1 = 0; i1 < 15; i1++) {
-      memcpy(&Pk_1[i1 * 15], &m_a[i1 * 15], 15U * sizeof(float));
+      memcpy(Pk_1 + i1 * 15, &m_a[i1 * 15], 15U * sizeof(float));
     }
 
     for (i1 = 0; i1 < 15; i1++) {
       for (i2 = 0; i2 < 15; i2++) {
-        d_Pk_1[i2 + 15 * i1] = (Pk_1[i2 + 15 * i1] + Pk_1[i1 + 15 * i2]) / 2;
+        d_Pk_1[i2 + 15 * i1] = (*(Pk_1 + i2 + 15 * i1) + (*(Pk_1 + i1 + 15 * i2))) / 2;
       }
     }
 
     for (i1 = 0; i1 < 15; i1++) {
-      memcpy(&Pk_1[i1 * 15], &d_Pk_1[i1 * 15], 15U * sizeof(float));
+      memcpy(Pk_1 + i1 * 15, &d_Pk_1[i1 * 15], 15U * sizeof(float));
     }
 
     /* update xk with d_xk */
@@ -601,21 +601,21 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
     /* 	dv = [xk_1(4);xk_1(5);xk_1(6)]; */
     /* 	de = [xk_1(7);xk_1(8);xk_1(9)]; */
     /* 	%} */
-    b_xk_1[0] = xk_1[0];
-    b_xk_1[1] = xk_1[1];
-    b_xk_1[2] = xk_1[2];
-    c_xk_1[0] = xk_1[3];
-    c_xk_1[1] = xk_1[4];
-    c_xk_1[2] = xk_1[5];
+    b_xk_1[0] = *(xk_1);
+    b_xk_1[1] = *(xk_1 + 1);
+    b_xk_1[2] = *(xk_1 + 2);
+    c_xk_1[0] = *(xk_1 + 3);
+    c_xk_1[1] = *(xk_1 + 4);
+    c_xk_1[2] = *(xk_1 + 5);
     for (i1 = 0; i1 < 3; i1++) {
       wie_n[i1] -= b_xk_1[i1];
       vn[i1] -= c_xk_1[i1];
     }
 
     eye(Cbn_);
-    d_xk_1[0] = xk_1[6];
-    d_xk_1[1] = xk_1[7];
-    d_xk_1[2] = xk_1[8];
+    d_xk_1[0] = *(xk_1 + 6);
+    d_xk_1[1] = *(xk_1 + 7);
+    d_xk_1[2] = *(xk_1 + 8);
     skew_mat3(d_xk_1, dv4);
     for (i1 = 0; i1 < 9; i1++) {
       Cbn_[i1] += dv4[i1];
@@ -638,26 +638,26 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
 
     memcpy(&c_Cbn[0], &Cbn[0], 9U * sizeof(float));
     normC(c_Cbn, Cbn);
-    PVA[0] = zI[0];
+    *(PVA) = *(zI);
     for (i1 = 0; i1 < 3; i1++) {
-      PVA[i1 + 1] = wie_n[i1];
-      PVA[i1 + 4] = vn[i1];
+      *(PVA + i1 + 1) = wie_n[i1];
+      *(PVA + i1 + 4) = vn[i1];
     }
 
-    PVA[7] = atan2(Cbn[5], Cbn[8]);
-    PVA[8] = -atan(Cbn[2] / sqrt(1 - Cbn[2] * Cbn[2]));
-    PVA[9] = atan2(Cbn[1], Cbn[0]);
+    *(PVA+7) = atan2(Cbn[5], Cbn[8]);
+    *(PVA+8) = -atan(Cbn[2] / sqrt(1 - Cbn[2] * Cbn[2]));
+    *(PVA+9) = atan2(Cbn[1], Cbn[0]);
 
     /* 10x1 */
-    bias[0] = xk_1[9];
-    bias[1] = xk_1[10];
-    bias[2] = xk_1[11];
-    bias[3] = xk_1[12];
-    bias[4] = xk_1[13];
-    bias[5] = xk_1[14];
+    *(bias) = *(xk_1 + 9);
+    *(bias+1) = *(xk_1 + 10);
+    *(bias+2) = *(xk_1 + 11);
+    *(bias+3) = *(xk_1 + 12);
+    *(bias+4) = *(xk_1 + 13);
+    *(bias+5) = *(xk_1 + 14);
 
     /* reset state d_xk after update xk */
-    memset(&xk_1[0], 0, 9U * sizeof(float));
+    memset(xk_1, 0, 9U * sizeof(float));
 
     /* ********************** */
     /* STEP2: time_Prediction */
@@ -665,16 +665,16 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
     for (i1 = 0; i1 < 15; i1++) {
       e_PHIk_hat[i1] = 0;
       for (i2 = 0; i2 < 15; i2++) {
-        e_PHIk_hat[i1] += PHIk_hat[i1 + 15 * i2] * xk_1[i2];
+        e_PHIk_hat[i1] += PHIk_hat[i1 + 15 * i2] * (*(xk_1 + i2));
       }
     }
 
     for (i1 = 0; i1 < 15; i1++) {
-      xk_1[i1] = e_PHIk_hat[i1];
+      (*(xk_1 + i1)) = e_PHIk_hat[i1];
       for (i2 = 0; i2 < 15; i2++) {
         d_PHIk_hat[i1 + 15 * i2] = 0;
         for (i3 = 0; i3 < 15; i3++) {
-          d_PHIk_hat[i1 + 15 * i2] += PHIk_hat[i1 + 15 * i3] * Pk_1[i3 + 15 * i2];
+          d_PHIk_hat[i1 + 15 * i2] += PHIk_hat[i1 + 15 * i3] * (*(Pk_1 + i3 + 15 * i2));
         }
       }
     }
@@ -686,7 +686,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
           x += d_PHIk_hat[i1 + 15 * i3] * PHIk_hat[i2 + 15 * i3];
         }
 
-        Pk_1[i1 + 15 * i2] = x + Qk[i1 + 15 * i2];
+        *(Pk_1 + i1 + 15 * i2) = x + Qk[i1 + 15 * i2];
       }
     }
   } else {
@@ -736,7 +736,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
       for (i2 = 0; i2 < 2; i2++) {
         b_Pk_1[i1 + 15 * i2] = 0;
         for (i3 = 0; i3 < 15; i3++) {
-          b_Pk_1[i1 + 15 * i2] += Pk_1[i1 + 15 * i3] * Hk[i2 + (i3 << 1)];
+          b_Pk_1[i1 + 15 * i2] += *(Pk_1 + i1 + 15 * i3) * Hk[i2 + (i3 << 1)];
         }
       }
     }
@@ -745,7 +745,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
       for (i2 = 0; i2 < 15; i2++) {
         g_Hk[i1 + (i2 << 1)] = 0;
         for (i3 = 0; i3 < 15; i3++) {
-          g_Hk[i1 + (i2 << 1)] += Hk[i1 + (i3 << 1)] * Pk_1[i3 + 15 * i2];
+          g_Hk[i1 + (i2 << 1)] += Hk[i1 + (i3 << 1)] * (*(Pk_1 + i3 + 15 * i2));
         }
       }
 
@@ -755,7 +755,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
           x += g_Hk[i1 + (i3 << 1)] * Hk[i2 + (i3 << 1)];
         }
 
-        f_Hk[i1 + (i2 << 1)] = x + Rk[i1 + (i2 << 1)];
+        f_Hk[i1 + (i2 << 1)] = x + (*(Rk + i1 + (i2 << 1)));
       }
     }
 
@@ -767,7 +767,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
     for (i1 = 0; i1 < 2; i1++) {
       b_Hk[i1] = 0;
       for (i2 = 0; i2 < 15; i2++) {
-        b_Hk[i1] += Hk[i1 + (i2 << 1)] * xk_1[i2];
+        b_Hk[i1] += Hk[i1 + (i2 << 1)] * (*(xk_1 + i2));
       }
 
       c_wen_n[i1] = b_wen_n[i1] - b_Hk[i1];
@@ -780,7 +780,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
         x += b_K[i1 + 15 * i2] * c_wen_n[i2];
       }
 
-      xk_1[i1] += x;
+      (*(xk_1 + i1)) += x;
       for (i2 = 0; i2 < 15; i2++) {
         x = 0;
         for (i3 = 0; i3 < 2; i3++) {
@@ -793,23 +793,23 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
       for (i2 = 0; i2 < 15; i2++) {
         l_a[i1 + 15 * i2] = 0;
         for (i3 = 0; i3 < 15; i3++) {
-          l_a[i1 + 15 * i2] += n_a[i1 + 15 * i3] * Pk_1[i3 + 15 * i2];
+          l_a[i1 + 15 * i2] += n_a[i1 + 15 * i3] * (*(Pk_1 + i3 + 15 * i2));
         }
       }
     }
 
     for (i1 = 0; i1 < 15; i1++) {
-      memcpy(&Pk_1[i1 * 15], &l_a[i1 * 15], 15U * sizeof(float));
+      memcpy(Pk_1 + i1 * 15, &l_a[i1 * 15], 15U * sizeof(float));
     }
 
     for (i1 = 0; i1 < 15; i1++) {
       for (i2 = 0; i2 < 15; i2++) {
-        c_Pk_1[i2 + 15 * i1] = (Pk_1[i2 + 15 * i1] + Pk_1[i1 + 15 * i2]) / 2;
+        c_Pk_1[i2 + 15 * i1] = (*(Pk_1 + i2 + 15 * i1) + (*(Pk_1 + i1 + 15 * i2))) / 2;
       }
     }
 
     for (i1 = 0; i1 < 15; i1++) {
-      memcpy(&Pk_1[i1 * 15], &c_Pk_1[i1 * 15], 15U * sizeof(float));
+      memcpy(Pk_1 + i1 * 15, &c_Pk_1[i1 * 15], 15U * sizeof(float));
     }
 
     /* update xk with d_xk */
@@ -818,21 +818,21 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
     /* 	dv = [xk_1(4);xk_1(5);xk_1(6)]; */
     /* 	de = [xk_1(7);xk_1(8);xk_1(9)]; */
     /* 	%} */
-    b_xk_1[0] = xk_1[0];
-    b_xk_1[1] = xk_1[1];
-    b_xk_1[2] = xk_1[2];
-    c_xk_1[0] = xk_1[3];
-    c_xk_1[1] = xk_1[4];
-    c_xk_1[2] = xk_1[5];
+    b_xk_1[0] = *(xk_1 + 0);
+    b_xk_1[1] = *(xk_1 + 1);
+    b_xk_1[2] = *(xk_1 + 2);
+    c_xk_1[0] = *(xk_1 + 3);
+    c_xk_1[1] = *(xk_1 + 4);
+    c_xk_1[2] = *(xk_1 + 5);
     for (i1 = 0; i1 < 3; i1++) {
       wie_n[i1] -= b_xk_1[i1];
       vn[i1] -= c_xk_1[i1];
     }
 
     eye(Cbn_);
-    d_xk_1[0] = xk_1[6];
-    d_xk_1[1] = xk_1[7];
-    d_xk_1[2] = xk_1[8];
+    d_xk_1[0] = *(xk_1 + 6);
+    d_xk_1[1] = *(xk_1 + 7);
+    d_xk_1[2] = *(xk_1 + 8);
     skew_mat3(d_xk_1, dv4);
     for (i1 = 0; i1 < 9; i1++) {
       Cbn_[i1] += dv4[i1];
@@ -855,26 +855,26 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
 
     memcpy(&b_Cbn[0], &Cbn[0], 9U * sizeof(float));
     normC(b_Cbn, Cbn);
-    PVA[0] = zI[0];
+    *(PVA) = *(zI);
     for (i1 = 0; i1 < 3; i1++) {
-      PVA[i1 + 1] = wie_n[i1];
-      PVA[i1 + 4] = vn[i1];
+      *(PVA + i1 + 1) = wie_n[i1];
+      *(PVA + i1 + 4) = vn[i1];
     }
 
-    PVA[7] = atan2(Cbn[5], Cbn[8]);
-    PVA[8] = -atan(Cbn[2] / sqrt(1 - Cbn[2] * Cbn[2]));
-    PVA[9] = atan2(Cbn[1], Cbn[0]);
+    *(PVA+7) = atan2(Cbn[5], Cbn[8]);
+    *(PVA+8) = -atan(Cbn[2] / sqrt(1 - Cbn[2] * Cbn[2]));
+    *(PVA+9) = atan2(Cbn[1], Cbn[0]);
 
     /* 10x1 */
-    bias[0] = xk_1[9];
-    bias[1] = xk_1[10];
-    bias[2] = xk_1[11];
-    bias[3] = xk_1[12];
-    bias[4] = xk_1[13];
-    bias[5] = xk_1[14];
+    *(bias) = *(xk_1 + 9);
+    *(bias+1) = *(xk_1 + 10);
+    *(bias+2) = *(xk_1 + 11);
+    *(bias+3) = *(xk_1 + 12);
+    *(bias+4) = *(xk_1 + 13);
+    *(bias+5) = *(xk_1 + 14);
 
     /* reset state d_xk after update xk */
-    memset(&xk_1[0], 0, 9U * sizeof(float));
+    memset(xk_1, 0, 9U * sizeof(float));
 
     /* ********************** */
     /* STEP2: time_Prediction */
@@ -882,16 +882,16 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
     for (i1 = 0; i1 < 15; i1++) {
       e_PHIk_hat[i1] = 0;
       for (i2 = 0; i2 < 15; i2++) {
-        e_PHIk_hat[i1] += PHIk_hat[i1 + 15 * i2] * xk_1[i2];
+        e_PHIk_hat[i1] += PHIk_hat[i1 + 15 * i2] * (*(xk_1 + i2));
       }
     }
 
     for (i1 = 0; i1 < 15; i1++) {
-      xk_1[i1] = e_PHIk_hat[i1];
+      (*(xk_1 + i1)) = e_PHIk_hat[i1];
       for (i2 = 0; i2 < 15; i2++) {
         d_PHIk_hat[i1 + 15 * i2] = 0;
         for (i3 = 0; i3 < 15; i3++) {
-          d_PHIk_hat[i1 + 15 * i2] += PHIk_hat[i1 + 15 * i3] * Pk_1[i3 + 15 * i2];
+          d_PHIk_hat[i1 + 15 * i2] += PHIk_hat[i1 + 15 * i3] * (*(Pk_1 + i3 + 15 * i2));
         }
       }
     }
@@ -903,7 +903,7 @@ void insgps_v6_0(float zI[10], float zG[7], bool gpsflag, float dt,\
           x += d_PHIk_hat[i1 + 15 * i3] * PHIk_hat[i2 + 15 * i3];
         }
 
-        Pk_1[i1 + 15 * i2] = x + Qk[i1 + 15 * i2];
+        *(Pk_1 + i1 + 15 * i2) = x + Qk[i1 + 15 * i2];
       }
     }
   }

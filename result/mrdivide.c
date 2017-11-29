@@ -19,7 +19,7 @@
  *                const float B[36]
  * Return Type  : void
  */
-void b_mrdivide(float A[90], float B[36])
+void b_mrdivide(float* A, float* B)
 {
   float b_A[36];
   signed char ipiv[6];
@@ -33,7 +33,7 @@ void b_mrdivide(float A[90], float B[36])
   float temp;
   int i;
   float s;
-  memcpy(&b_A[0], &B[0], 36U * sizeof(float));
+  memcpy(b_A, B, 36U * sizeof(float));
   for (k = 0; k < 6; k++) {
     ipiv[k] = (signed char)(1 + k);
   }
@@ -97,14 +97,14 @@ void b_mrdivide(float A[90], float B[36])
       kBcol = 15 * (k - 1);
       if (b_A[(k + jAcol) - 1] != 0.0) {
         for (i = 0; i < 15; i++) {
-          A[i + jp] -= b_A[(k + jAcol) - 1] * A[i + kBcol];
+          *(A + i + jp) -= b_A[(k + jAcol) - 1] * (*(A + i + kBcol));
         }
       }
     }
 
     temp = 1.0 / b_A[j + jAcol];
     for (i = 0; i < 15; i++) {
-      A[i + jp] *= temp;
+      *(A + i + jp) *= temp;
     }
   }
 
@@ -115,7 +115,7 @@ void b_mrdivide(float A[90], float B[36])
       kBcol = 15 * (k - 1);
       if (b_A[k + jAcol] != 0.0) {
         for (i = 0; i < 15; i++) {
-          A[i + jp] -= b_A[k + jAcol] * A[i + kBcol];
+          *(A + i + jp) -= b_A[k + jAcol] * (*(A + i + kBcol));
         }
       }
     }
@@ -125,9 +125,9 @@ void b_mrdivide(float A[90], float B[36])
     if (ipiv[kBcol] != kBcol + 1) {
       jp = ipiv[kBcol] - 1;
       for (jAcol = 0; jAcol < 15; jAcol++) {
-        temp = A[jAcol + 15 * kBcol];
-        A[jAcol + 15 * kBcol] = A[jAcol + 15 * jp];
-        A[jAcol + 15 * jp] = temp;
+        temp = *(A + jAcol + 15 * kBcol);
+        *(A + jAcol + 15 * kBcol) = *(A + jAcol + 15 * jp);
+        *(A + jAcol + 15 * jp) = temp;
       }
     }
   }
@@ -139,7 +139,7 @@ void b_mrdivide(float A[90], float B[36])
  *                float y[30]
  * Return Type  : void
  */
-void mrdivide(float A[30], float B[4], float y[30])
+void mrdivide(float* A, float* B, float* y)
 {
   int r1;
   int r2;
@@ -155,11 +155,11 @@ void mrdivide(float A[30], float B[4], float y[30])
   }
 
   a21 = B[r2] / B[r1];
-  a22 = B[2 + r2] - a21 * B[2 + r1];
+  a22 = B[2 + r2] - a21 * (*(B + 2 + r1));
   for (k = 0; k < 15; k++) {
-    y[k + 15 * r1] = A[k] / B[r1];
-    y[k + 15 * r2] = (A[15 + k] - y[k + 15 * r1] * B[2 + r1]) / a22;
-    y[k + 15 * r1] -= y[k + 15 * r2] * a21;
+    y[k + 15 * r1] = (*(A + k)) / (*(B + r1));
+    y[k + 15 * r2] = (*(A + 15 + k) - (*(y + k + 15 * r1)) * (*(B + 2 + r1))) / a22;
+    y[k + 15 * r1] -= *(y + k + 15 * r2) * a21;
   }
 }
 

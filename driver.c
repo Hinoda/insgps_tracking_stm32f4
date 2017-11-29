@@ -679,7 +679,7 @@ void send_data(void)
 * lan2: 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000
 *
 */
-void send_PVA(float PVA[10], float zG[7], bool gpsflag){
+void send_PVA(float* PVA, float* zG, bool gpsflag){
 	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	uint16_t 	i, k;
 	int32_t 	temp32;
@@ -688,7 +688,7 @@ void send_PVA(float PVA[10], float zG[7], bool gpsflag){
 	txbuff[0] = 10;//start line with LF
 	k=1;
 	/* index */
-	ftemp = PVA[0]; 
+	ftemp = *PVA; 
 	temp32  = (int32_t)ftemp;
 	IntToStr8(temp32, &txbuff[k]);
 	k = k + 8;
@@ -696,7 +696,7 @@ void send_PVA(float PVA[10], float zG[7], bool gpsflag){
 	//k++;
 	/* lat lon => [rad]*10^6 */
 	for (i=1; i<3; i++){
-		ftemp = PVA[i]*1000000;
+		ftemp = *(PVA+i)*1000000;
 		temp32  = (int32_t)ftemp;
 		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;
@@ -704,7 +704,7 @@ void send_PVA(float PVA[10], float zG[7], bool gpsflag){
 	}
 	/* height VN VE VD => [m m/s]*10^3 */
 	for (i=3; i<7; i++){
-		ftemp = PVA[i]*1000;
+		ftemp = *(PVA+i)*1000;
 		temp32  = (int32_t)ftemp;
 		IntToStr6(temp32, &txbuff[k]);
 		k = k + 6;
@@ -712,7 +712,7 @@ void send_PVA(float PVA[10], float zG[7], bool gpsflag){
 	}
 	/* roll pitch yaw => [rad]*10^6 */
 	for (i=7; i<10; i++){
-		ftemp = PVA[i]*1000000;
+		ftemp = *(PVA+i)*1000000;
 		temp32  = (int32_t)ftemp;
 		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;
@@ -725,7 +725,7 @@ void send_PVA(float PVA[10], float zG[7], bool gpsflag){
 		txbuff[k++] = 'G';
 		txbuff[k++] = ' ';
 		/* time => [s]*10 */
-		ftemp = zG[0]*10; 
+		ftemp = (*zG)*10; 
 		temp32  = (int32_t)ftemp;
 		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;
@@ -733,7 +733,7 @@ void send_PVA(float PVA[10], float zG[7], bool gpsflag){
 		
 		/* lat lon => [rad]*10^6 */
 		for (i=1; i<3; i++){
-			ftemp = zG[i]*1000000; 
+			ftemp = *(zG+i)*1000000; 
 			temp32  = (int32_t)ftemp;
 			IntToStr8(temp32, &txbuff[k]);	
 			k = k + 8;
@@ -741,7 +741,7 @@ void send_PVA(float PVA[10], float zG[7], bool gpsflag){
 		}
 		/* height VN VE VD => [m m/s]*10^3 */
 		for (i=3; i<7; i++){
-			ftemp = zG[i]*1000; 
+			ftemp = *(zG+i)*1000; 
 			temp32  = (int32_t)ftemp;
 			IntToStr6(temp32, &txbuff[k]);
 			k = k + 6;

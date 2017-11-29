@@ -17,8 +17,8 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void b_power(float a[3], float y[3]);
-void power(float a[36], float y[36]);
+void b_power(float* a, float* y);
+void power(float* a, float* y);
 
 #endif
 

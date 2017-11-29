@@ -22,25 +22,14 @@
 #include "Cbn_31_terminate.h"
 #include "Cbn_31_initialize.h"
 
-
-
-
 /********** Local (static) variable definition ********************************/
 
 static boolean_T OverrunFlag = 0;
-bool gpsAvail = false;
-bool firstTime = false;
+
 uint16_t ID[3];
 uint16_t i = 0;
-uint8_t g_commaIndex[23];
 uint16_t timesRun = 0;
-float g_dt, g_g0;
-float g_a, g_e;
-float g_we;
-float g_PVA[10];
-float g_bias[6];
-float g_Q[144], g_R[36];
-float g_Pk_1[225], g_xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
+
 /********** Local function definition section *********************************/
 
 void rt_OneStep(void)
@@ -72,6 +61,18 @@ void rt_OneStep(void)
 
 int main(void)
 {
+	bool gpsAvail = false;
+	bool firstTime = false;
+	uint8_t g_commaIndex[23];
+	float g_dt, g_g0;
+	float g_a, g_e;
+	float g_we;
+	float g_PVA[10];
+	float g_bias[6];
+	float g_Q[144], g_R[36];
+	float g_Pk_1[225], g_xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
+	
+	
 	SystemCoreClockUpdate();
 	/* Enable SysTick at 5ms interrupt */
 	//SysTick_Config(SystemCoreClock/100);//10ms
@@ -92,24 +93,29 @@ int main(void)
 			/* Calcutalte zI+zG data */
 			rt_OneStep();				/* IMU_Quest: Get IMU data. Find Euler angles */
 			INSDataProcess();			/* Process & Store new INS data */
-
+			
+			/* Get dt from elapsed time between samples*/
+            ElapsedGet(&elapsedTime1);
+			ElapsedRestart();
+			/* ------------------ */
+			
 			receive_data();				/* Get GPS data */
-			if((rxflag == 1)&&(rxlen>100))
+			if(rxflag == 1)
             {
                 AssignGPSComma(g_commaIndex);
 				//gpsAvail = rxflag&(CheckGPSflag(commaIndex));
 				gpsAvail = CheckGPSflag(g_commaIndex);
 				GPSDataProcess(gpsAvail, g_commaIndex);
 				rxflag = 0;
-				rxlen = 0;
             }
 			else
 			{
 				gpsAvail = false;
 			}
 			
-            ElapsedGet(&elapsedTime1);
-			ElapsedRestart();
+			
+			
+			
             if (!firstTime)
             {
                 if (gpsAvail)
@@ -124,10 +130,10 @@ int main(void)
                     delay_01ms(100);
                     //sendMode("YAY!!!\r\nCube is starting now.........");
                 }
-                else
+                /*else
                 {
                     //sendMode("Trying to start...");
-                }
+                }*/
             }
 			else //second third ...
             {
@@ -141,7 +147,7 @@ int main(void)
             send_PVA(g_PVA,zG,gpsAvail);					/* Transmit PVA to UART5 */	
 			for (uint8_t i=0;i<7;i++)	zG[i]=0;
 			for (uint8_t i=0;i<10;i++)	zI[i]=0;
-			i=0;
+			//i=0;
 			//ElapsedGet(&elapsedTime1);
 		}
 	}

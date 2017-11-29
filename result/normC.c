@@ -25,7 +25,7 @@
  *                float Cbn[9]
  * Return Type  : void
  */
-void normC(float C[9], float Cbn[9])
+void normC(float* C, float* Cbn)
 {
   float dv0[9];
   int k;
@@ -34,15 +34,15 @@ void normC(float C[9], float Cbn[9])
   int i0;
 
   /* % METHOD web */
-  skew_mat3(*(float (*)[3])&C[3], dv0);
+  skew_mat3(*(float (*)[3])(C+3), dv0);
   for (k = 0; k < 3; k++) {
-    C[k] = 0.0;
+    *(C + k) = 0.0;
     for (i0 = 0; i0 < 3; i0++) {
-      C[k] += dv0[k + 3 * i0] * C[6 + i0];
+      *(C + k) += dv0[k + 3 * i0] * (*(C + 6 + i0));
     }
   }
 
-  b_power(*(float (*)[3])&C[0], x);
+  b_power(*(float (*)[3])C, x);
   y = x[0];
   for (k = 0; k < 2; k++) {
     y += x[k + 1];
@@ -50,18 +50,18 @@ void normC(float C[9], float Cbn[9])
 
   y = sqrt(y);
   for (k = 0; k < 3; k++) {
-    C[k] /= y;
+    *(C + k) /= y;
   }
 
-  skew_mat3(*(float (*)[3])&C[6], dv0);
+  skew_mat3(*(float (*)[3])(C+6), dv0);
   for (k = 0; k < 3; k++) {
-    C[3 + k] = 0.0;
+    *(C + 3 + k) = 0.0;
     for (i0 = 0; i0 < 3; i0++) {
-      C[3 + k] += dv0[k + 3 * i0] * C[i0];
+      *(C + 3 + k) += dv0[k + 3 * i0] * (*(C + i0));
     }
   }
 
-  b_power(*(float (*)[3])&C[3], x);
+  b_power(*(float (*)[3])(C+3), x);
   y = x[0];
   for (k = 0; k < 2; k++) {
     y += x[k + 1];
@@ -69,10 +69,10 @@ void normC(float C[9], float Cbn[9])
 
   y = sqrt(y);
   for (k = 0; k < 3; k++) {
-    C[3 + k] /= y;
+    *(C + 3 + k) /= y;
   }
 
-  b_power(*(float (*)[3])&C[6], x);
+  b_power(*(float (*)[3])(C+6), x);
   y = x[0];
   for (k = 0; k < 2; k++) {
     y += x[k + 1];
@@ -80,10 +80,10 @@ void normC(float C[9], float Cbn[9])
 
   y = sqrt(y);
   for (k = 0; k < 3; k++) {
-    C[6 + k] /= y;
+    *(C + 6 + k) /= y;
   }
 
-  memcpy(&Cbn[0], &C[0], 9U * sizeof(float));
+  memcpy(Cbn, C, 9U * sizeof(float));
 }
 
 /*

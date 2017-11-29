@@ -17,8 +17,8 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void b_diag(float v[2], float d[4]);
-void diag(float v[6], float d[36]);
+void b_diag(float* v, float* d);
+void diag(float* v, float* d);
 
 #endif
 

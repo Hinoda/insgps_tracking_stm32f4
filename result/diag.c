@@ -19,15 +19,15 @@
  *                float d[4]
  * Return Type  : void
  */
-void b_diag(float v[2], float d[4])
+void b_diag(float* v, float* d)
 {
   int j;
   for (j = 0; j < 4; j++) {
-    d[j] = 0.0;
+    *(d+j) = 0.0;
   }
 
   for (j = 0; j < 2; j++) {
-    d[j + (j << 1)] = v[j];
+    *(d+j+(j<<1)) = *(v+j);
   }
 }
 
@@ -36,12 +36,12 @@ void b_diag(float v[2], float d[4])
  *                float d[36]
  * Return Type  : void
  */
-void diag(float v[6], float d[36])
+void diag(float* v, float* d)
 {
   int j;
-  memset(&d[0], 0, 36U * sizeof(float));
+  memset(d, 0, 36U * sizeof(float));
   for (j = 0; j < 6; j++) {
-    d[j + 6 * j] = v[j];
+    *(d+j+6*j) = *(v+j);
   }
 }
 

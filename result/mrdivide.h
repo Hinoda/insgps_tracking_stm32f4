@@ -17,8 +17,8 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void b_mrdivide(float A[90], float B[36]);
-void mrdivide(float A[30], float B[4], float y[30]);
+void b_mrdivide(float* A, float* B);
+void mrdivide(float* A, float* B, float* y);
 
 #endif
 

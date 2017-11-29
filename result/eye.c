@@ -18,12 +18,12 @@
  * Arguments    : float I[225]
  * Return Type  : void
  */
-void b_eye(float I[225])
+void b_eye(float* I)
 {
   int k;
-  memset(&I[0], 0, 225U * sizeof(float));
+  memset(I, 0, 225U * sizeof(float));
   for (k = 0; k < 15; k++) {
-    I[k + 15 * k] = 1.0;
+    *(I+k+15*k) = 1.0;
   }
 }
 
@@ -31,12 +31,12 @@ void b_eye(float I[225])
  * Arguments    : float I[9]
  * Return Type  : void
  */
-void eye(float I[9])
+void eye(float* I)
 {
   int k;
-  memset(&I[0], 0, 9U * sizeof(float));
+  memset(I, 0, 9U * sizeof(float));
   for (k = 0; k < 3; k++) {
-    I[k + 3 * k] = 1.0;
+    *(I+k+3*k) = 1.0;
   }
 }
 

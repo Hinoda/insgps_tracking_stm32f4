@@ -18,17 +18,17 @@
  *                float ret[9]
  * Return Type  : void
  */
-void skew_mat3(float A[3], float ret[9])
+void skew_mat3(float* A, float* ret)
 {
-  ret[0] = 0.0;
-  ret[3] = -A[2];
-  ret[6] = A[1];
-  ret[1] = A[2];
-  ret[4] = 0.0;
-  ret[7] = -A[0];
-  ret[2] = -A[1];
-  ret[5] = A[0];
-  ret[8] = 0.0;
+  *(ret+0) = 0.0;
+  *(ret+3) = -(*(A+2));
+  *(ret+6) = *(A+1);
+  *(ret+1) = *(A+2);
+  *(ret+4) = 0.0;
+  *(ret+7) = -(*(A+0));
+  *(ret+2) = -(*(A+1));
+  *(ret+5) = *(A+0);
+  *(ret+8) = 0.0;
 }
 
 /*

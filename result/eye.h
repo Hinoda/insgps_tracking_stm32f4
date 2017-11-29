@@ -17,8 +17,8 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void b_eye(float I[225]);
-void eye(float I[9]);
+void b_eye(float* I);
+void eye(float* I);
 
 #endif
 

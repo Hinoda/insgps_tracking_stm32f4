@@ -45,7 +45,7 @@ void cmdw_adis(uint16_t data);
  * transmit buffer is txbuff[300]
  */
 void send_zG(float zG[7], int16_t moreInfo);
-void send_PVA(float PVA[10], float* zG, bool gpsflag);
+void send_PVA(float* PVA, float* zG, bool gpsflag);
 void sendElapsed(uint16_t elapsedTime);
 void sendMode(uint8_t* myinfo);
 void send_data(void);

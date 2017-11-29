@@ -17,7 +17,7 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void normC(float C[9], float Cbn[9]);
+void normC(float* C, float* Cbn);
 
 #endif
 
