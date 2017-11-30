@@ -18,7 +18,7 @@ float zG[7];
 float gpstimeOld=0;
 float head=0;
 float speed=0;
-float height_=0;
+float heightOld=0;
 int numofsat=0;
 
 
@@ -47,19 +47,24 @@ bool CheckGPSflag(uint8_t* commaIndex)
 	else return false;
 }
 
-void GPSDataProcess(bool gpsflag, uint8_t* commaIndex)
+void GPSDataProcess(bool my_gpsAvail, bool my_firstTime, uint8_t* commaIndex)
 {
 	for (uint8_t i=0;i<7;i++)	zG[i]=0;
-	if (gpsflag){
+	if (my_gpsAvail){
 		//TIME
 		ToFloat(&zG[0],xsbuff+*(commaIndex+9)+1,*(commaIndex+10)-*(commaIndex+9)-1);
 		
 		//HEIGHT
 		ToFloat(&zG[3],xsbuff+*(commaIndex+17)+1,*(commaIndex+18)-*(commaIndex+17)-1);
-		height_=zG[3];
 		
 		//VD
-		zG[6]=(height_-zG[3])/(zG[0]-gpstimeOld);
+		if (my_firstTime){
+			zG[6]=0;
+		}
+		else{
+			zG[6]=(heightOld-zG[3])/(zG[0]-gpstimeOld);
+		}
+		heightOld=zG[3];
 		gpstimeOld=zG[0];
 		
 		//LAT-LON

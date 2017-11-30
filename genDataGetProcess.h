@@ -25,5 +25,5 @@ void ToFloat(float* dest, uint8_t* from, uint8_t length);
 void ToInt(int* dest, uint8_t* from, uint8_t length);
 void AssignGPSComma(uint8_t* commaIndex);
 bool CheckGPSflag(uint8_t* commaIndex);
-void GPSDataProcess(bool gpsflag, uint8_t* commaIndex);
+void GPSDataProcess(bool my_gpsAvail, bool my_firstTime, uint8_t* commaIndex);
 void INSDataProcess(void);

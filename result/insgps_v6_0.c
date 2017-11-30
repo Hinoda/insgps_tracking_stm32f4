@@ -724,7 +724,7 @@ void insgps_v6_0(float* zI, float* zG, bool gpsflag, float dt,\
 
     /*  R~z  R~2 */
     for (i1 = 0; i1 < 2; i1++) {
-      b_Hk[i1] = 25;
+      b_Hk[i1] = 1;
     }
 
     b_diag(b_Hk, Rk);
@@ -762,8 +762,8 @@ void insgps_v6_0(float* zI, float* zG, bool gpsflag, float dt,\
     mrdivide(b_Pk_1, f_Hk, b_K);
 
     /* 15x15*15x6*(6x15*15x15*15x6+6*6)^-1 */
-    b_wen_n[0] = -wen_n[1];
-    b_wen_n[1] = -wen_n[2];
+    b_wen_n[0] = wen_n[1];
+    b_wen_n[1] = wen_n[2];
     for (i1 = 0; i1 < 2; i1++) {
       b_Hk[i1] = 0;
       for (i2 = 0; i2 < 15; i2++) {

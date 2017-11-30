@@ -749,7 +749,7 @@ void send_PVA(float* PVA, float* zG, bool gpsflag){
 		}
 		txbuff[k++] = 13;//CR 0x0d
 	}
-	k++;
+	//k++;
 	DMA_ClearFlag(DMA1_Stream7, DMA_FLAG_TCIF7);
 	DMA1_Stream7->NDTR = k;
 	DMA_Cmd(DMA1_Stream7, ENABLE);

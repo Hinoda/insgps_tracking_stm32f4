@@ -63,6 +63,7 @@ int main(void)
 {
 	bool gpsAvail = false;
 	bool firstTime = false;
+	bool sendGPS = false;
 	uint8_t g_commaIndex[23];
 	float g_dt, g_g0;
 	float g_a, g_e;
@@ -70,8 +71,7 @@ int main(void)
 	float g_PVA[10];
 	float g_bias[6];
 	float g_Q[144], g_R[36];
-	float g_Pk_1[225], g_xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
-	
+	float g_Pk_1[225], g_xk_1[15];
 	
 	SystemCoreClockUpdate();
 	/* Enable SysTick at 5ms interrupt */
@@ -105,17 +105,15 @@ int main(void)
                 AssignGPSComma(g_commaIndex);
 				//gpsAvail = rxflag&(CheckGPSflag(commaIndex));
 				gpsAvail = CheckGPSflag(g_commaIndex);
-				GPSDataProcess(gpsAvail, g_commaIndex);
+				sendGPS = gpsAvail;
+				GPSDataProcess(gpsAvail, firstTime, g_commaIndex);
 				rxflag = 0;
             }
 			else
 			{
 				gpsAvail = false;
+				sendGPS = false;
 			}
-			
-			
-			
-			
             if (!firstTime)
             {
                 if (gpsAvail)
@@ -123,7 +121,7 @@ int main(void)
                     initialize(&g_dt, &g_g0, &g_a, &g_e, &g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
 					g_dt = elapsedTime1*pow(10,-5);
 					//g_dt = 0.02;
-					zG[6]=0.1;
+					//zG[6]=0.1;//VD =/=0.1
 					insgps_v6_0(zI, zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
                     firstTime = true;
                     gpsAvail = false;
@@ -142,9 +140,10 @@ int main(void)
 				insgps_v6_0(zI, zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
 				gpsAvail = false;
             }
-
+			
             //sendMode("Sending PVA ==>");
-            send_PVA(g_PVA,zG,gpsAvail);					/* Transmit PVA to UART5 */	
+            send_PVA(g_PVA,zG,sendGPS);					/* Transmit PVA to UART5 */
+			sendGPS = false;	
 			for (uint8_t i=0;i<7;i++)	zG[i]=0;
 			for (uint8_t i=0;i<10;i++)	zI[i]=0;
 			//i=0;
