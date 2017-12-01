@@ -12,11 +12,14 @@
 #include <string.h>
 #include <math.h>
 
-extern float zI[10];
-extern float zG[7];
-extern float gpstime;
+extern float g_zI[10];
+extern float g_zG[7];
+extern float gpstimeOld;
 extern float head;
 extern float speed;
+extern float heightOld;
+extern int numOfSat;
+
 
 //extern uint8_t gpsbuff[RXBUFF_SIZE];
 void posToGoog(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos);

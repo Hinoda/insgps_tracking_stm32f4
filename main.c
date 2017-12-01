@@ -122,7 +122,7 @@ int main(void)
 					g_dt = elapsedTime1*pow(10,-5);
 					//g_dt = 0.02;
 					//zG[6]=0.1;//VD =/=0.1
-					insgps_v6_0(zI, zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
+					insgps_v6_0(g_zI, g_zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
                     firstTime = true;
                     gpsAvail = false;
                     delay_01ms(100);
@@ -137,15 +137,15 @@ int main(void)
             {
                 g_dt = elapsedTime1*pow(10,-5);
 				//g_dt = 0.02;
-				insgps_v6_0(zI, zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
+				insgps_v6_0(g_zI, g_zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
 				gpsAvail = false;
             }
 			
             //sendMode("Sending PVA ==>");
-            send_PVA(g_PVA,zG,sendGPS);					/* Transmit PVA to UART5 */
+            send_PVA(g_PVA,g_zG,sendGPS);					/* Transmit PVA to UART5 */
 			sendGPS = false;	
-			for (uint8_t i=0;i<7;i++)	zG[i]=0;
-			for (uint8_t i=0;i<10;i++)	zI[i]=0;
+			for (uint8_t i=0;i<7;i++)	g_zG[i]=0;
+			for (uint8_t i=0;i<10;i++)	g_zI[i]=0;
 			//i=0;
 			//ElapsedGet(&elapsedTime1);
 		}

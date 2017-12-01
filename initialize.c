@@ -30,16 +30,16 @@ void initialize(float *dt,\
 	/*initialize PVA_,params,bias_*/
 	/***********************************************************/
 	// PVA_ = [zI(1); rn_; vn_; euler_];
-	*PVA = *zI;
-	*(PVA+1) = *(zG+1);
-	*(PVA+2) = *(zG+2);
-	*(PVA+3) = *(zG+3);
-	*(PVA+4) = *(zG+4);
-	*(PVA+5) = *(zG+5);
-	*(PVA+6) = *(zG+6);
-	*(PVA+7) = *(zI+1);
-	*(PVA+8) = *(zI+2);
-	*(PVA+9) = *(zI+3);
+	*PVA = *g_zI;
+	*(PVA+1) = *(g_zG+1);
+	*(PVA+2) = *(g_zG+2);
+	*(PVA+3) = *(g_zG+3);
+	*(PVA+4) = *(g_zG+4);
+	*(PVA+5) = *(g_zG+5);
+	*(PVA+6) = *(g_zG+6);
+	*(PVA+7) = *(g_zI+1);
+	*(PVA+8) = *(g_zI+2);
+	*(PVA+9) = *(g_zI+3);
 	// bias = [ba_, bg_];
 	for (j = 0; j < 6; j++) {
 		*(bias + j) = 0;			//bai=0.49033 bgi=0.05235
