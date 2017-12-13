@@ -2,7 +2,7 @@
  * File: mrdivide.h
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 12-Nov-2017 15:05:52
+ * C/C++ source code generated on  : 07-Dec-2017 23:15:41
  */
 
 #ifndef MRDIVIDE_H
@@ -17,8 +17,8 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void b_mrdivide(float* A, float* B);
-void mrdivide(float* A, float* B, float* y);
+void b_mrdivide(double A[90], const double B[36]);
+void mrdivide(const double A[30], const double B[4], double y[30]);
 
 #endif
 

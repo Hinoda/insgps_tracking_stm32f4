@@ -2,12 +2,13 @@
  * File: diag.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 12-Nov-2017 15:05:52
+ * C/C++ source code generated on  : 07-Dec-2017 23:15:41
  */
 
 /* Include Files */
 #include "Cbn_31.h"
-#include "insgps_v6_0.h"
+#include "deg2utm.h"
+#include "insgps_v8_0.h"
 #include "normC.h"
 #include "skew_mat3.h"
 #include "diag.h"
@@ -15,33 +16,33 @@
 /* Function Definitions */
 
 /*
- * Arguments    : const float v[2]
- *                float d[4]
+ * Arguments    : const double v[2]
+ *                double d[4]
  * Return Type  : void
  */
-void b_diag(float* v, float* d)
+void b_diag(const double v[2], double d[4])
 {
   int j;
   for (j = 0; j < 4; j++) {
-    *(d+j) = 0.0;
+    d[j] = 0.0;
   }
 
   for (j = 0; j < 2; j++) {
-    *(d+j+(j<<1)) = *(v+j);
+    d[j + (j << 1)] = v[j];
   }
 }
 
 /*
- * Arguments    : const float v[6]
- *                float d[36]
+ * Arguments    : const double v[6]
+ *                double d[36]
  * Return Type  : void
  */
-void diag(float* v, float* d)
+void diag(const double v[6], double d[36])
 {
   int j;
-  memset(d, 0, 36U * sizeof(float));
+  memset(&d[0], 0, 36U * sizeof(double));
   for (j = 0; j < 6; j++) {
-    *(d+j+6*j) = *(v+j);
+    d[j + 6 * j] = v[j];
   }
 }
 

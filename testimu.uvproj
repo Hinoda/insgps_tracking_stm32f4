@@ -457,42 +457,67 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>STM32F4XX</GroupName>
+          <GroupName>result</GroupName>
           <Files>
             <File>
-              <FileName>misc.c</FileName>
+              <FileName>Cbn_31.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\misc.c</FilePath>
+              <FilePath>.\result\Cbn_31.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_fsmc.c</FileName>
+              <FileName>Cbn_31_initialize.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_fsmc.c</FilePath>
+              <FilePath>.\result\Cbn_31_initialize.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_gpio.c</FileName>
+              <FileName>Cbn_31_terminate.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c</FilePath>
+              <FilePath>.\result\Cbn_31_terminate.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_rcc.c</FileName>
+              <FileName>deg2utm.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c</FilePath>
+              <FilePath>.\result\deg2utm.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_usart.c</FileName>
+              <FileName>diag.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c</FilePath>
+              <FilePath>.\result\diag.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_spi.c</FileName>
+              <FileName>eye.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c</FilePath>
+              <FilePath>.\result\eye.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_dma.c</FileName>
+              <FileName>insgps_v7_0.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c</FilePath>
+              <FilePath>.\result\insgps_v7_0.c</FilePath>
+            </File>
+            <File>
+              <FileName>insgps_v8_0.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\insgps_v8_0.c</FilePath>
+            </File>
+            <File>
+              <FileName>mrdivide.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\mrdivide.c</FilePath>
+            </File>
+            <File>
+              <FileName>normC.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\normC.c</FilePath>
+            </File>
+            <File>
+              <FileName>power.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\power.c</FilePath>
+            </File>
+            <File>
+              <FileName>skew_mat3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\result\skew_mat3.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -537,57 +562,42 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>result</GroupName>
+          <GroupName>STM32F4XX</GroupName>
           <Files>
             <File>
-              <FileName>Cbn_31.c</FileName>
+              <FileName>misc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\Cbn_31.c</FilePath>
+              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\misc.c</FilePath>
             </File>
             <File>
-              <FileName>Cbn_31_initialize.c</FileName>
+              <FileName>stm32f4xx_fsmc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\Cbn_31_initialize.c</FilePath>
+              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_fsmc.c</FilePath>
             </File>
             <File>
-              <FileName>Cbn_31_terminate.c</FileName>
+              <FileName>stm32f4xx_gpio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\Cbn_31_terminate.c</FilePath>
+              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_gpio.c</FilePath>
             </File>
             <File>
-              <FileName>diag.c</FileName>
+              <FileName>stm32f4xx_rcc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\diag.c</FilePath>
+              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_rcc.c</FilePath>
             </File>
             <File>
-              <FileName>eye.c</FileName>
+              <FileName>stm32f4xx_usart.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\eye.c</FilePath>
+              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_usart.c</FilePath>
             </File>
             <File>
-              <FileName>insgps_v6_0.c</FileName>
+              <FileName>stm32f4xx_spi.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\insgps_v6_0.c</FilePath>
+              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_spi.c</FilePath>
             </File>
             <File>
-              <FileName>mrdivide.c</FileName>
+              <FileName>stm32f4xx_dma.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\mrdivide.c</FilePath>
-            </File>
-            <File>
-              <FileName>normC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\result\normC.c</FilePath>
-            </File>
-            <File>
-              <FileName>power.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\result\power.c</FilePath>
-            </File>
-            <File>
-              <FileName>skew_mat3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\result\skew_mat3.c</FilePath>
+              <FilePath>.\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c</FilePath>
             </File>
           </Files>
         </Group>

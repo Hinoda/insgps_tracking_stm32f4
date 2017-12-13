@@ -1,12 +1,12 @@
 /*
- * File: diag.h
+ * File: deg2utm.h
  *
  * MATLAB Coder version            : 3.1
  * C/C++ source code generated on  : 07-Dec-2017 23:15:41
  */
 
-#ifndef DIAG_H
-#define DIAG_H
+#ifndef DEG2UTM_H
+#define DEG2UTM_H
 
 /* Include Files */
 #include <math.h>
@@ -17,13 +17,12 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void b_diag(const double v[2], double d[4]);
-void diag(const double v[6], double d[36]);
+void deg2utm(double Lat, double Lon, double *x, double *y);
 
 #endif
 
 /*
- * File trailer for diag.h
+ * File trailer for deg2utm.h
  *
  * [EOF]
  */

@@ -2,22 +2,22 @@
 //params
 #include "initialize.h"
 #include "genDataGetProcess.h"
-//float dt, g0;
-//float a, e;
-//float we;
-//float PVA[10];
-//float bias[6];
-//float Q[144], R[36];
-//float Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
-float xPI_180 = 0.017453292519943;
-float x180_PI = 57.295779513082323;
+//double dt, g0;
+//double a, e;
+//double we;
+//double PVA[10];
+//double bias[6];
+//double Q[144], R[36];
+//double Pk_1[225], xk_1[15]; /*ko setup them Pk, xk vi chi muon delay, ko xuat ra*/
+double xPI_180 = 0.017453292519943;
+double x180_PI = 57.295779513082323;
 
-//void initialize(float *dt,\
-//				float *g0, float *a, float *e, float *we, float Q[144], float R[36],\
-//				float PVA[10], float bias[6], float Pk_1[225], float xk_1[15])
-void initialize(float *dt,\
-				float *g0, float *a, float *e, float *we, float* Q, float* R,\
-				float* PVA, float* bias, float* Pk_1, float* xk_1)
+//void initialize(double *dt,\
+//				double *g0, double *a, double *e, double *we, double Q[144], double R[36],\
+//				double PVA[10], double bias[6], double Pk_1[225], double xk_1[15])
+void initialize(double *dt,\
+				double *g0, double *a, double *e, double *we, double* Q, double* R,\
+				double* PVA, double* bias, double* Pk_1, double* xk_1)
 {
 
 //	dt = 0.1/5;
@@ -46,27 +46,27 @@ void initialize(float *dt,\
 	}
 	/***********************************************************/
 	// P: Pk_1 = diag([sgmPr_; sgmPv_; sgmPe_; sgmPba_; sgmPbg_};
-	float sgmPk_1[15];
+	double sgmPk_1[15];
 	//sgmPr_[3]
-	sgmPk_1[0] = 5e0*xPI_180;
-	sgmPk_1[1] = 5e0*xPI_180;
-	sgmPk_1[2] = 5e0;
+	sgmPk_1[0] = 5e-6*xPI_180;
+	sgmPk_1[1] = 5e-6*xPI_180;
+	sgmPk_1[2] = 2e0;
 	//sgmPv_[3]
-	sgmPk_1[3] = 5e0;
-	sgmPk_1[4] = 5e0;
+	sgmPk_1[3] = 2e0;
+	sgmPk_1[4] = 2e0;
 	sgmPk_1[5] = 2e0;
 	//sgmPe_[3]
-	sgmPk_1[6] = 5e0*xPI_180;
-	sgmPk_1[7] = 5e0*xPI_180;
+	sgmPk_1[6] = 2e0*xPI_180;
+	sgmPk_1[7] = 2e0*xPI_180;
 	sgmPk_1[8] = 5e0*xPI_180;
 	//sgmPba_[3]					
-	sgmPk_1[9] = 5e0;
-	sgmPk_1[10] = 5e0;
-	sgmPk_1[11] = 5e0;
+	sgmPk_1[9] = 6e-1;
+	sgmPk_1[10] = 6e-1;
+	sgmPk_1[11] = 6e-1;
 	//sgmPbg_[3]
-	sgmPk_1[12] = 3e0*xPI_180;
-	sgmPk_1[13] = 3e0*xPI_180;
-	sgmPk_1[14] = 3e0*xPI_180;
+	sgmPk_1[12] = 4e0*xPI_180;
+	sgmPk_1[13] = 4e0*xPI_180;
+	sgmPk_1[14] = 4e0*xPI_180;
 	for (j = 0; j < 225; j++) {
 		*(Pk_1 + j) = 0;
 	}
@@ -82,23 +82,23 @@ void initialize(float *dt,\
 	/* Kalman params */
 	/***********************************************************/
 	//Q: do bat dinh cua he thong
-	float sgmQ[12];
+	double sgmQ[12];
 	//sgmQa_[3]
-	sgmQ[0] = 5e-1;
-	sgmQ[1] = 5e-1;
-	sgmQ[2] = 5e-1;
+	sgmQ[0] = (5.56e-5)*1;
+	sgmQ[1] = (5.56e-5)*1;
+	sgmQ[2] = (5.56e-5)*1;
 	//sgmQg_[3]
-	sgmQ[3] = 5e-1*xPI_180;
-	sgmQ[4] = 5e-1*xPI_180;
-	sgmQ[5] = 5e-1*xPI_180;
+	sgmQ[3] = (5.56e-4)*1*xPI_180;
+	sgmQ[4] = (5.56e-4)*1*xPI_180;
+	sgmQ[5] = (5.56e-4)*1*xPI_180;
 	//sgmQba_[3]
-	sgmQ[6] = 1e-2;
-	sgmQ[7] = 1e-2;
-	sgmQ[8] = 1e-2;
+	sgmQ[6] = (8.72e-4)*1;
+	sgmQ[7] = (8.72e-4)*1;
+	sgmQ[8] = (8.72e-4)*1;
 	//sgmQbg_[3]
-	sgmQ[9] = 1e-2*xPI_180;
-	sgmQ[10] = 1e-2*xPI_180;
-	sgmQ[11] = 1e-2*xPI_180;					
+	sgmQ[9] = 0.0065*1*xPI_180;
+	sgmQ[10] = 0.0065*1*xPI_180;
+	sgmQ[11] = 0.0065*1*xPI_180;					
 	for (j = 0; j < 144; j++) {
 		*(Q + j) = 0;
 	}
@@ -107,15 +107,15 @@ void initialize(float *dt,\
 	}
 	/***********************************************************/
 	// R: do sai lech cua phep do
-	float sgmR[6];
+	double sgmR[6];
 	//RP
-	sgmR[0] = 1e-6;
-	sgmR[1] = 1e-6;
-	sgmR[2] = 1e-3;
+	sgmR[0] = 5e-2;
+	sgmR[1] = 5e-2;
+	sgmR[2] = 5e-1;
 	//RV
 	sgmR[3] = 1e-2;
 	sgmR[4] = 1e-2;
-	sgmR[5] = 1e-2;
+	sgmR[5] = 2e-2;
 	for (j = 0; j < 36; j++) {
 		*(R + j) = 0;
 	}

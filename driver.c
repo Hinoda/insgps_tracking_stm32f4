@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include "deg2utm.h"
 double  marg[15];
 double  euler[3];
 int16_t elapsedTime1;
@@ -679,41 +680,51 @@ void send_data(void)
 * lan2: 10000 10000 10000 10000 10000 10000 10000 10000 10000 10000
 *
 */
-void send_PVA(float* PVA, float* zG, bool gpsflag){
+void send_PVA(double* PVA, double* zG, bool gpsflag){
 	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	uint16_t 	i, k;
 	int32_t 	temp32;
-	float 		ftemp;//hold data
-
+	double 		dtemp;//hold data
+	double		ylatUTM=0,xlonUTM=0;
 	txbuff[0] = 10;//start line with LF
 	k=1;
 	/* index */
-	ftemp = *PVA; 
-	temp32  = (int32_t)ftemp;
+	dtemp = *PVA; 
+	temp32  = (int32_t)dtemp;
 	IntToStr8(temp32, &txbuff[k]);
 	k = k + 8;
 	txbuff[k++] = ' ';
 	//k++;
 	/* lat lon => [rad]*10^6 */
-	for (i=1; i<3; i++){
-		ftemp = *(PVA+i)*1000000;
-		temp32  = (int32_t)ftemp;
-		IntToStr8(temp32, &txbuff[k]);
-		k = k + 8;
-		txbuff[k++] = ' ';
-	}
+	/* latUTM lonUTM => [m]*10^3 */
+	deg2utm(*(PVA+1), *(PVA+2), &xlonUTM, &ylatUTM);
+	temp32  = (int32_t)xlonUTM;
+	IntToStr8(temp32, &txbuff[k]);
+	k = k + 8;
+	txbuff[k++] = ' ';
+	temp32  = (int32_t)ylatUTM;
+	IntToStr8(temp32, &txbuff[k]);
+	k = k + 8;
+	txbuff[k++] = ' ';
+//	for (i=1; i<3; i++){
+//		dtemp = *(PVA+i)*1000;
+//		temp32  = (int32_t)dtemp;
+//		IntToStr8(temp32, &txbuff[k]);
+//		k = k + 8;
+//		txbuff[k++] = ' ';
+//	}
 	/* height VN VE VD => [m m/s]*10^3 */
 	for (i=3; i<7; i++){
-		ftemp = *(PVA+i)*1000;
-		temp32  = (int32_t)ftemp;
+		dtemp = *(PVA+i)*1000;
+		temp32  = (int32_t)dtemp;
 		IntToStr6(temp32, &txbuff[k]);
 		k = k + 6;
 		txbuff[k++] = ' ';
 	}
 	/* roll pitch yaw => [rad]*10^6 */
 	for (i=7; i<10; i++){
-		ftemp = *(PVA+i)*1000000;
-		temp32  = (int32_t)ftemp;
+		dtemp = *(PVA+i)*1000000;
+		temp32  = (int32_t)dtemp;
 		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
@@ -725,24 +736,24 @@ void send_PVA(float* PVA, float* zG, bool gpsflag){
 		txbuff[k++] = 'G';
 		txbuff[k++] = ' ';
 		/* time => [s]*10 */
-		ftemp = (*zG)*10; 
-		temp32  = (int32_t)ftemp;
+		dtemp = (*zG)*10; 
+		temp32  = (int32_t)dtemp;
 		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;
 		txbuff[k++] = ' ';
 		
 		/* lat lon => [rad]*10^6 */
 		for (i=1; i<3; i++){
-			ftemp = *(zG+i)*1000000; 
-			temp32  = (int32_t)ftemp;
+			dtemp = *(zG+i)*1000000; 
+			temp32  = (int32_t)dtemp;
 			IntToStr8(temp32, &txbuff[k]);	
 			k = k + 8;
 			txbuff[k++] = ' ';
 		}
 		/* height VN VE VD => [m m/s]*10^3 */
 		for (i=3; i<7; i++){
-			ftemp = *(zG+i)*1000; 
-			temp32  = (int32_t)ftemp;
+			dtemp = *(zG+i)*1000; 
+			temp32  = (int32_t)dtemp;
 			IntToStr6(temp32, &txbuff[k]);
 			k = k + 6;
 			txbuff[k++] = ' ';
@@ -755,7 +766,7 @@ void send_PVA(float* PVA, float* zG, bool gpsflag){
 	DMA_Cmd(DMA1_Stream7, ENABLE);
 }
 
-void send_zG(float zG[7], int16_t moreInfo){
+void send_zG(double zG[7], int16_t moreInfo){
 	while(DMA_GetCmdStatus(DMA1_Stream7)==ENABLE);
 	//while(DMA_GetFlagStatus(DMA1_Stream7, DMA_FLAG_TCIF7) == 0);
 	//while(DMA1_Stream7->NDTR!= 0);
@@ -763,7 +774,7 @@ void send_zG(float zG[7], int16_t moreInfo){
 	uint16_t 	i=0, k=1;
 	int32_t 	temp32;
 	int16_t 	temp16;
-	float 		ftemp;//hold data
+	double 		dtemp;//hold data
 
 	txbuff[0] = 10;//start line with LF
 	/* index */
@@ -773,16 +784,16 @@ void send_zG(float zG[7], int16_t moreInfo){
 	txbuff[k++] = ' ';
 	
 	/* time => [s]*10 */
-	ftemp = zG[0]*10; 
-	temp32  = (int32_t)ftemp;
+	dtemp = zG[0]*10; 
+	temp32  = (int32_t)dtemp;
 	IntToStr8(temp32, &txbuff[k]);
 	k = k + 8;
 	txbuff[k++] = ' ';
 	
 	/* lat lon => [rad]*10^6 */
 	for (i=1; i<3; i++){
-		ftemp = zG[i]*1000000; 
-		temp32  = (int32_t)ftemp;
+		dtemp = zG[i]*1000000; 
+		temp32  = (int32_t)dtemp;
 		IntToStr8(temp32, &txbuff[k]);	
 		k = k + 8;
 		txbuff[k++] = ' ';
@@ -790,8 +801,8 @@ void send_zG(float zG[7], int16_t moreInfo){
 	
 	/* height VN VE VD => [m m/s]*10^3 */
 	for (i=3; i<7; i++){
-		ftemp = zG[i]*1000; 
-		temp32 = (int32_t)ftemp;
+		dtemp = zG[i]*1000; 
+		temp32 = (int32_t)dtemp;
 		IntToStr6(temp32, &txbuff[k]);
 		k = k + 6;
 		txbuff[k++] = ' ';
@@ -826,7 +837,7 @@ void sendElapsed(uint16_t elapsedTime){
 	int16_t  	temp16;
 	
 	txbuff[0] = 10;//start line with LF
-	txbuff[k++] = 42;
+	txbuff[k++] = 'T';
 	txbuff[k++] = ' ';
 	temp16  = (int16_t)elapsedTime;
 	IntToStr5(temp16, &txbuff[k]);

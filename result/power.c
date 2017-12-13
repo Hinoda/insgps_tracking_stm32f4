@@ -2,12 +2,13 @@
  * File: power.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 12-Nov-2017 15:05:52
+ * C/C++ source code generated on  : 07-Dec-2017 23:15:41
  */
 
 /* Include Files */
 #include "Cbn_31.h"
-#include "insgps_v6_0.h"
+#include "deg2utm.h"
+#include "insgps_v8_0.h"
 #include "normC.h"
 #include "skew_mat3.h"
 #include "power.h"
@@ -15,28 +16,15 @@
 /* Function Definitions */
 
 /*
- * Arguments    : const float a[3]
- *                float y[3]
+ * Arguments    : const double a[3]
+ *                double y[3]
  * Return Type  : void
  */
-void b_power(float* a, float* y)
+void power(const double a[3], double y[3])
 {
   int k;
   for (k = 0; k < 3; k++) {
-    *(y+k) = *(a+k) * (*(a+k));
-  }
-}
-
-/*
- * Arguments    : const float a[36]
- *                float y[36]
- * Return Type  : void
- */
-void power(float* a, float* y)
-{
-  int k;
-  for (k = 0; k < 36; k++) {
-    *(y+k) = *(a+k) * (*(a+k));
+    y[k] = a[k] * a[k];
   }
 }
 

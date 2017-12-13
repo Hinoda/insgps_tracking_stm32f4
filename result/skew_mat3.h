@@ -2,7 +2,7 @@
  * File: skew_mat3.h
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 12-Nov-2017 15:05:52
+ * C/C++ source code generated on  : 07-Dec-2017 23:15:41
  */
 
 #ifndef SKEW_MAT3_H
@@ -17,7 +17,7 @@
 #include "Cbn_31_types.h"
 
 /* Function Declarations */
-void skew_mat3(float* A, float* ret);
+void skew_mat3(const double A[3], double ret[9]);
 
 #endif
 

@@ -13,14 +13,14 @@
 	% zG   =   [tt  lat   lon    h     , Vn      Ve      Vd];
  */
 int ind;
-float g_zI[10];
-float g_zG[7];
-float gpstimeOld=0;
-float head=0;
-float speed=0;
-float heightOld=0;
+double g_zI[10];
+double g_zG[7];
+double gpstimeOld=0;
+double head=0;
+double speed=0;
+double heightOld=0;
 int numOfSat=0;
-
+int PosFixIndicator=0;
 
 void AssignGPSComma(uint8_t* commaIndex)
 {
@@ -39,9 +39,10 @@ void AssignGPSComma(uint8_t* commaIndex)
 
 bool CheckGPSflag(uint8_t* commaIndex)
 {
-	ToInt(&numOfSat,xsbuff+*(commaIndex+15)+1,*(commaIndex+16)-*(commaIndex+15)-1);
-	if ((numOfSat>=4)){
-		numOfSat=0;
+	//ToInt(&numOfSat,xsbuff+*(commaIndex+15)+1,*(commaIndex+16)-*(commaIndex+15)-1);
+	ToInt(&PosFixIndicator,xsbuff+*(commaIndex+14)+1,*(commaIndex+15)-*(commaIndex+14)-1);
+	if (PosFixIndicator!=0){
+		PosFixIndicator=0;
 		return true;
 	}
 	else return false;
@@ -52,10 +53,10 @@ void GPSDataProcess(bool my_gpsAvail, bool my_firstTime, uint8_t* commaIndex)
 	for (uint8_t i=0;i<7;i++)	g_zG[i]=0;
 	if (my_gpsAvail){
 		//TIME
-		ToFloat(&g_zG[0],xsbuff+*(commaIndex+9)+1,*(commaIndex+10)-*(commaIndex+9)-1);
+		ToDouble(&g_zG[0],xsbuff+*(commaIndex+9)+1,*(commaIndex+10)-*(commaIndex+9)-1);
 		
 		//HEIGHT
-		ToFloat(&g_zG[3],xsbuff+*(commaIndex+17)+1,*(commaIndex+18)-*(commaIndex+17)-1);
+		ToDouble(&g_zG[3],xsbuff+*(commaIndex+17)+1,*(commaIndex+18)-*(commaIndex+17)-1);
 		
 		//VD
 		if (my_firstTime){
@@ -74,12 +75,12 @@ void GPSDataProcess(bool my_gpsAvail, bool my_firstTime, uint8_t* commaIndex)
 		g_zG[2]=g_zG[2]*xPI_180;
 		
 		//SPEED
-		ToFloat(&speed,xsbuff+*(commaIndex+4)+1,*(commaIndex+5)-*(commaIndex+4)-1);
+		ToDouble(&speed,xsbuff+*(commaIndex+4)+1,*(commaIndex+5)-*(commaIndex+4)-1);
 		speed=speed*0.51444444;
 		
 		//HEAD
-		if ((*(commaIndex+1)-*commaIndex-1)>0){
-			ToFloat(&head,xsbuff+*(commaIndex+0)+1,*(commaIndex+1)-*(commaIndex+0)-1);
+		if ((*(commaIndex+1)-*(commaIndex+0)-1)>0){
+			ToDouble(&head,xsbuff+*(commaIndex+0)+1,*(commaIndex+1)-*(commaIndex+0)-1);
 			head=head*xPI_180;
 		}
 		else{
@@ -119,7 +120,7 @@ void INSDataProcess(void)
 //	
 //	*dest = atof(strdest);//ko nen dung atof atoi (thu vien standard) co the dung sscanf
 //}
-void ToFloat(float* dest, uint8_t* from, uint8_t length)
+void ToDouble(double* dest, uint8_t* from, uint8_t length)
 {
 	int phanNguyen = 0;
 	int phanThapPhan = 0;
@@ -149,7 +150,7 @@ void ToFloat(float* dest, uint8_t* from, uint8_t length)
 		soChia *= 10;
 	}
 
-	*dest = (float)phanNguyen + (float)(phanThapPhan) / soChia;
+	*dest = (double)phanNguyen + (double)phanThapPhan / soChia;
 }
 
 //void ToInt(int* dest, uint8_t* from, uint8_t length)
@@ -207,9 +208,9 @@ void ToInt(int* dest, uint8_t* from, uint8_t length)
 //	else *dest=0;
 //}
 
-void posToGoog(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
+void posToGoog(double* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
 {
-	float mnt = 0, out = 0;
+	double mnt = 0, out = 0;
 	int deg = 0;
 	uint8_t* extractMntCursor;
 	uint8_t mntLength, degLength;
@@ -221,9 +222,9 @@ void posToGoog(float* dest, uint8_t* from, uint8_t length, uint8_t _cPos)
 			break;
 		}
 	}
-	ToFloat(&mnt, extractMntCursor, mntLength);
+	ToDouble(&mnt, extractMntCursor, mntLength);
 	ToInt(&deg, from, degLength);
-	out = (float)deg+mnt/60;
+	out = (double)deg+mnt/60;
 	switch (_cPos)
 	{
 		case 'N' :
