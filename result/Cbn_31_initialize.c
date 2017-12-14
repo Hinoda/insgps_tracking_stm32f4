@@ -2,14 +2,14 @@
  * File: Cbn_31_initialize.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 07-Dec-2017 23:15:41
+ * C/C++ source code generated on  : 13-Dec-2017 10:47:33
  */
 
 /* Include Files */
 #include "Cbn_31.h"
+#include "GramSchmidt.h"
 #include "deg2utm.h"
-#include "insgps_v8_0.h"
-#include "normC.h"
+#include "insgps_v11.h"
 #include "skew_mat3.h"
 #include "Cbn_31_initialize.h"
 

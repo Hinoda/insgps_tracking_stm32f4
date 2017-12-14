@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #include "driver.h"
-#include "insgps_v8_0.h"
+#include "insgps_v11.h"
 #include "initialize.h"
 #include "genDataGetProcess.h"
 #include "IMU_Quest.h"                 /* Model's header file */
@@ -17,7 +17,7 @@
 //#include "rtwtypes.h"                  /* MathWorks types */
 
 #include "Cbn_31.h"
-#include "normC.h"
+#include "GramSchmidt.h"
 #include "skew_mat3.h"
 #include "Cbn_31_terminate.h"
 #include "Cbn_31_initialize.h"
@@ -104,6 +104,7 @@ int main(void)
 				////////////////////////////////////////////////////////////////////////////
 				//ElapsedRestart();
 				/* zI*/
+				read_adis();
 				INSDataProcess();			/* Process & Store new INS data */
 				receive_data();				/* Get GPS data */
 				if(rxflag == 1)
@@ -125,9 +126,9 @@ int main(void)
 					{
 						initialize(&g_dt, &g_g0, &g_a, &g_e, &g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
 						//g_dt = elapsedTime1*pow(10,-5);
-						g_dt = 0.025;//guess
+						//g_dt = 0.025;//guess
 						ElapsedRestart();
-						insgps_v8_0(g_zI, g_zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
+						//insgps_v11(g_zI, g_zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
 						firstTime = true;
 						gpsAvail = false;
 						//sendMode("YAY!!!\r\nCube is starting now.........");
@@ -140,8 +141,9 @@ int main(void)
 				else //second third ...
 				{
 					ElapsedGet(&elapsedTime1);
+					ElapsedRestart();
 					g_dt = elapsedTime1*pow(10,-5);
-					insgps_v8_0(g_zI, g_zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
+					insgps_v11(g_zI, g_zG, gpsAvail, g_dt, g_g0, g_a, g_e, g_we, g_Q, g_R, g_PVA, g_bias, g_Pk_1, g_xk_1);
 					gpsAvail = false;
 				}
 				/*

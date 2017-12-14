@@ -420,14 +420,19 @@
           <GroupName>User</GroupName>
           <Files>
             <File>
-              <FileName>startup_stm32f40_41xxx.s</FileName>
-              <FileType>2</FileType>
-              <FilePath>.\startup_stm32f40_41xxx.s</FilePath>
-            </File>
-            <File>
               <FileName>driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>genDataGetProcess.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\genDataGetProcess.c</FilePath>
+            </File>
+            <File>
+              <FileName>initialize.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\initialize.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -445,14 +450,9 @@
               <FilePath>.\system_timetick.c</FilePath>
             </File>
             <File>
-              <FileName>genDataGetProcess.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\genDataGetProcess.c</FilePath>
-            </File>
-            <File>
-              <FileName>initialize.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\initialize.c</FilePath>
+              <FileName>startup_stm32f40_41xxx.s</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\startup_stm32f40_41xxx.s</FilePath>
             </File>
           </Files>
         </Group>
@@ -490,29 +490,19 @@
               <FilePath>.\result\eye.c</FilePath>
             </File>
             <File>
-              <FileName>insgps_v7_0.c</FileName>
+              <FileName>GramSchmidt.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\insgps_v7_0.c</FilePath>
+              <FilePath>.\result\GramSchmidt.c</FilePath>
             </File>
             <File>
-              <FileName>insgps_v8_0.c</FileName>
+              <FileName>insgps_v11.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\result\insgps_v8_0.c</FilePath>
+              <FilePath>.\result\insgps_v11.c</FilePath>
             </File>
             <File>
               <FileName>mrdivide.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\result\mrdivide.c</FilePath>
-            </File>
-            <File>
-              <FileName>normC.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\result\normC.c</FilePath>
-            </File>
-            <File>
-              <FileName>power.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\result\power.c</FilePath>
             </File>
             <File>
               <FileName>skew_mat3.c</FileName>

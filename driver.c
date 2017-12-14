@@ -1,3 +1,5 @@
+#include "stm32f4xx.h"
+#include "misc.h"
 #include "driver.h"
 #include <stdio.h>
 #include <stdbool.h>
@@ -15,7 +17,7 @@ uint8_t xsbuff[XSBUFF_SIZE];
 uint16_t rxlen  = 0;
 uint16_t rxflag = 0;
 uint16_t rxfull = 0;
-
+double	ylatUTM=0,xlonUTM=0;
 
 
 void init_board(void)
@@ -441,9 +443,9 @@ void read_adis(void)
 	//marg[5] = -marg[5] + 5.0;
 	//marg[6] = -marg[6] + 12.0;
 
-//	marg[4] = -marg[4];
-//	marg[5] = -marg[5];
-//	marg[6] = -marg[6];
+	marg[4] = -marg[4];
+	marg[5] = -marg[5];
+	marg[6] = -marg[6];
 	
 }
 
@@ -622,6 +624,39 @@ void IntToStr8(int32_t u, uint8_t *y){
 	
 }
 
+void IntToStr12(int32_t u, uint8_t *y){
+	int32_t a;
+	a = u;
+	if (a<0){ 
+		a = -a; 
+		y[0] = '-';
+	}
+	else y[0] = ' ';
+
+	y[11] = a % 10 + 0x30; 
+	a = a / 10;	
+	y[10] = a % 10 + 0x30; 
+	a = a / 10;
+	y[9] = a % 10 + 0x30; 
+	a = a / 10;
+	y[8] = a % 10 + 0x30; 
+	a = a / 10;
+	y[7] = a % 10 + 0x30; 
+	a = a / 10;	
+	y[6] = a % 10 + 0x30; 
+	a = a / 10;
+	y[5] = a % 10 + 0x30; 
+	a = a / 10;
+	y[4] = a % 10 + 0x30; 
+	a = a / 10;
+	y[3] = a % 10 + 0x30; 
+	a = a / 10;
+	y[2] = a % 10 + 0x30; 
+	a = a / 10;
+	y[1] = a + 0x30;
+	
+}
+
 void send_data(void)
 {
 	uint16_t 	i, k;
@@ -685,7 +720,7 @@ void send_PVA(double* PVA, double* zG, bool gpsflag){
 	uint16_t 	i, k;
 	int32_t 	temp32;
 	double 		dtemp;//hold data
-	double		ylatUTM=0,xlonUTM=0;
+
 	txbuff[0] = 10;//start line with LF
 	k=1;
 	/* index */
@@ -698,13 +733,16 @@ void send_PVA(double* PVA, double* zG, bool gpsflag){
 	/* lat lon => [rad]*10^6 */
 	/* latUTM lonUTM => [m]*10^3 */
 	deg2utm(*(PVA+1), *(PVA+2), &xlonUTM, &ylatUTM);
+	xlonUTM*=1000;
+	ylatUTM*=1000;
+	
 	temp32  = (int32_t)xlonUTM;
-	IntToStr8(temp32, &txbuff[k]);
-	k = k + 8;
+	IntToStr12(temp32, &txbuff[k]);
+	k = k + 12;
 	txbuff[k++] = ' ';
 	temp32  = (int32_t)ylatUTM;
-	IntToStr8(temp32, &txbuff[k]);
-	k = k + 8;
+	IntToStr12(temp32, &txbuff[k]);
+	k = k + 12;
 	txbuff[k++] = ' ';
 //	for (i=1; i<3; i++){
 //		dtemp = *(PVA+i)*1000;
@@ -723,7 +761,8 @@ void send_PVA(double* PVA, double* zG, bool gpsflag){
 	}
 	/* roll pitch yaw => [rad]*10^6 */
 	for (i=7; i<10; i++){
-		dtemp = *(PVA+i)*1000000;
+		dtemp = *(PVA+i)*57295.779513082323;
+		//dtemp = *(PVA+i)*1000000;
 		temp32  = (int32_t)dtemp;
 		IntToStr8(temp32, &txbuff[k]);
 		k = k + 8;

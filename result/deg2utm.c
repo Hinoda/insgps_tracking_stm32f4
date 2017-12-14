@@ -2,14 +2,14 @@
  * File: deg2utm.c
  *
  * MATLAB Coder version            : 3.1
- * C/C++ source code generated on  : 07-Dec-2017 23:15:41
+ * C/C++ source code generated on  : 13-Dec-2017 10:47:33
  */
 
 /* Include Files */
 #include "Cbn_31.h"
+#include "GramSchmidt.h"
 #include "deg2utm.h"
-#include "insgps_v8_0.h"
-#include "normC.h"
+#include "insgps_v11.h"
 #include "skew_mat3.h"
 
 /* Function Definitions */
@@ -69,6 +69,7 @@
 void deg2utm(double Lat, double Lon, double *x, double *y)
 {
   double lat;
+  double b_y;
   double deltaS;
   double a;
   double epsilon;
@@ -95,7 +96,14 @@ void deg2utm(double Lat, double Lon, double *x, double *y)
   /* alpha = ( sa - sb ) / sa;             %f */
   /* ablandamiento = 1 / alpha;   % 1/f */
   lat = Lat * 0.017453292519943295;
-  deltaS = Lon * 0.017453292519943295 - (trunc(Lon / 6.0 + 31.0) * 6.0 - 183.0) *
+  *y = Lon / 6.0;
+  if (*y + 31.0 < 0.0) {
+    b_y = ceil(*y + 31.0);
+  } else {
+    b_y = floor(*y + 31.0);
+  }
+
+  deltaS = Lon * 0.017453292519943295 - (b_y * 6.0 - 183.0) *
     0.017453292519943295;
   a = cos(lat) * sin(deltaS);
   epsilon = 0.5 * log((1.0 + a) / (1.0 - a));

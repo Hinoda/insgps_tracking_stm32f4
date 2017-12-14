@@ -48,25 +48,25 @@ void initialize(double *dt,\
 	// P: Pk_1 = diag([sgmPr_; sgmPv_; sgmPe_; sgmPba_; sgmPbg_};
 	double sgmPk_1[15];
 	//sgmPr_[3]
-	sgmPk_1[0] = 5e-6*xPI_180;
-	sgmPk_1[1] = 5e-6*xPI_180;
+	sgmPk_1[0] = 4e-5*xPI_180;
+	sgmPk_1[1] = 4e-5*xPI_180;
 	sgmPk_1[2] = 2e0;
 	//sgmPv_[3]
-	sgmPk_1[3] = 2e0;
-	sgmPk_1[4] = 2e0;
-	sgmPk_1[5] = 2e0;
+	sgmPk_1[3] = 2e-1;
+	sgmPk_1[4] = 2e-1;
+	sgmPk_1[5] = 5e-1;
 	//sgmPe_[3]
-	sgmPk_1[6] = 2e0*xPI_180;
-	sgmPk_1[7] = 2e0*xPI_180;
-	sgmPk_1[8] = 5e0*xPI_180;
+	sgmPk_1[6] = 1e-1*xPI_180;
+	sgmPk_1[7] = 1e-1*xPI_180;
+	sgmPk_1[8] = 1e-1*xPI_180;
 	//sgmPba_[3]					
-	sgmPk_1[9] = 6e-1;
-	sgmPk_1[10] = 6e-1;
-	sgmPk_1[11] = 6e-1;
+	sgmPk_1[9] = 15e-1;
+	sgmPk_1[10] = 15e-1;
+	sgmPk_1[11] = 15e-1;
 	//sgmPbg_[3]
-	sgmPk_1[12] = 4e0*xPI_180;
-	sgmPk_1[13] = 4e0*xPI_180;
-	sgmPk_1[14] = 4e0*xPI_180;
+	sgmPk_1[12] = 8e0*xPI_180;
+	sgmPk_1[13] = 8e0*xPI_180;
+	sgmPk_1[14] = 8e0*xPI_180;
 	for (j = 0; j < 225; j++) {
 		*(Pk_1 + j) = 0;
 	}
